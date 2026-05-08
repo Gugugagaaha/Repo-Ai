@@ -19,3 +19,6 @@
 - [Setup environment PC](reference_pc_environment.md) — struktur symlink dan path config repo di PC (beda dari laptop)
 - [POS Furniture — Status Project](project_pos_furniture.md) — phase selesai, tech stack, keputusan arsitektur, pending backlog
 - [POS Furniture — GitHub Repo](reference_pos_furniture_repo.md) — URL repo, branch main, catatan force push
+- [Session Log — backup tiap ~10 prompt](feedback_session_log.md) — tulis summary ke SESSION_LOG.md tiap ~10 prompt, milestone besar ke PROGRESS.md
+- [Boleh pakai multi-skill sekaligus](feedback_multi_skill.md) — invoke semua skill yang relevan tanpa minta izin per skill
+- [Skill discovery — cari skill baru jika kurang optimal](feedback_skill_discovery.md) — tanya dulu, cari dari sumber manapun, wajib aman (bukan malware), propose + command install
