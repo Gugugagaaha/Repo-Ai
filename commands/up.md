@@ -27,16 +27,78 @@ Simpan nilai `$configRepo` ini — gunakan sebagai base path di semua step berik
 
 ---
 
-## Step 1 — Pull dari GitHub
+## Step 1 — Fetch & Compare Remote vs Local
 
-Ambil perubahan terbaru dari GitHub (bisa ada update dari perangkat lain):
+Jangan langsung pull. Fetch dulu, lalu compare — pastikan tidak ada file yang salah terhapus di local sebelum sync.
 
 ```powershell
 cd "<configRepo dari Step 0>"
-git pull
+git fetch origin
 ```
 
-Jika ada conflict → selesaikan conflict dulu sebelum lanjut. Laporkan ke user jika terjadi conflict.
+Setelah fetch, jalankan comparison:
+
+```powershell
+# Lihat status local (untracked, modified, deleted)
+git status --short
+
+# Lihat diff local vs remote secara detail
+git diff --name-status origin/master HEAD
+```
+
+Interpretasi output `git diff --name-status origin/master HEAD`:
+- `A` = file baru di local (belum ada di remote) → aman, akan di-push
+- `M` = file dimodifikasi di local → aman, akan di-push
+- `D` = file ada di remote tapi **tidak ada di local** → ⚠️ POTENSI SALAH HAPUS
+
+---
+
+## Step 1.5 — Safety Check: Deteksi File Terhapus
+
+**Wajib dijalankan sebelum pull atau push apapun.**
+
+Cek apakah ada file dengan status `D` dari output Step 1:
+
+```powershell
+$deleted = git diff --name-status origin/master HEAD | Where-Object { $_ -match '^D\t' }
+```
+
+**Jika `$deleted` kosong** → tidak ada file terhapus, lanjut ke Step 1.6.
+
+**Jika `$deleted` ada isinya** → STOP. Tampilkan warning ke user:
+
+```
+⚠️  FILE TERHAPUS DI LOCAL — BELUM ADA DI REMOTE:
+[daftar file yang terhapus]
+
+Pilihan:
+  [R] Restore dari remote (lo salah hapus)
+  [K] Keep deletion (memang sengaja dihapus, push ke remote)
+```
+
+Tunggu konfirmasi user sebelum lanjut.
+
+- Jika user pilih **Restore**:
+```powershell
+# Restore file dari remote
+git checkout origin/master -- <nama-file>
+# Ulangi untuk setiap file yang mau di-restore
+```
+
+- Jika user pilih **Keep** → catat, lanjut ke Step 1.6 (file akan ikut ter-push sebagai deletion).
+
+---
+
+## Step 1.6 — Pull / Merge dari Remote
+
+Setelah safety check selesai, baru merge perubahan dari remote:
+
+```powershell
+cd "<configRepo dari Step 0>"
+git merge origin/master
+```
+
+Jika ada conflict → selesaikan dulu, laporkan ke user sebelum lanjut.
 
 ---
 
@@ -145,8 +207,21 @@ Jika ada file yang berubah tapi belum masuk ke staging → pastikan ikut di-comm
 
 ## Step 7 — Commit & Push ke GitHub
 
+Sebelum staging, tampilkan dulu apa yang akan di-commit:
+
 ```powershell
 cd "<configRepo dari Step 0>"
+git status --short
+```
+
+Laporkan ke user secara singkat:
+- File baru yang akan di-push
+- File yang dimodifikasi
+- File yang akan dihapus dari remote (kalau ada — hanya kalau user sudah konfirmasi di Step 1.5)
+
+Jika semua sudah sesuai, baru commit & push:
+
+```powershell
 git add -A
 git diff --cached --quiet || git commit -m "sync: $(Get-Date -Format 'yyyy-MM-dd')"
 git push
@@ -180,13 +255,14 @@ Sampaikan ringkasan apa saja yang diupdate:
 
 ```
 /up selesai:
-- Config repo: <path yang dideteksi di Step 0>
-- GitHub pull: ✅ up to date / [X commit pulled dari remote]
-- PROGRESS.md: ✅ diupdate
-- Memory files: [X file diupdate / tidak ada yang baru]
+- Config repo    : <path yang dideteksi di Step 0>
+- Safety check   : ✅ tidak ada file terhapus / ⚠️ [X file] ditemukan → [restored/deleted]
+- GitHub pull    : ✅ up to date / [X commit pulled dari remote]
+- PROGRESS.md    : ✅ diupdate
+- Memory files   : [X file diupdate / tidak ada yang baru]
 - MEMORY.md index: [✅ diupdate / tidak ada perubahan]
 - Skills registry: [✅ diupdate / tidak ada skill baru]
-- File repo lainnya: [daftar file yang ikut diupdate / tidak ada]
-- GitHub push: ✅ pushed / nothing to push
+- File lainnya   : [daftar file yang ikut diupdate / tidak ada]
+- GitHub push    : ✅ pushed / nothing to push
 - Verifikasi sync: ✅ local == remote
 ```
