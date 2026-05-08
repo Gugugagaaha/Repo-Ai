@@ -15,3 +15,5 @@
 - [GitHub Identity](user_github.md) — GitHub username Gugugagaaha, repo config: Repo-Ai (private), git credentials sudah ada di Credential Manager
 - [Git vs gh CLI](feedback_git_credentials.md) — cek git credentials dulu via git ls-remote, pakai git langsung kalau bisa, gh hanya fallback
 - [Konfirmasi file target](feedback_confirm_target_file.md) — pastikan file yang diedit adalah file yang dimaksud user, bukan file lain yang konteksnya mirip
+- [Jangan hardcode path di skill/command](feedback_no_hardcode_paths.md) — skill/command harus auto-detect path karena user punya multiple machine dengan struktur beda
+- [Setup environment PC](reference_pc_environment.md) — struktur symlink dan path config repo di PC (beda dari laptop)

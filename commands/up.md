@@ -7,12 +7,32 @@ Lakukan full sync sesi ini. Ikuti semua langkah berikut secara berurutan.
 
 ---
 
+## Step 0 — Deteksi Config Repo Path
+
+**WAJIB dijalankan pertama sebelum step lain.** Jangan hardcode path apapun — deteksi dulu.
+
+```powershell
+$claudeItem = Get-Item "$env:USERPROFILE\.claude" -ErrorAction SilentlyContinue
+$candidates = @()
+if ($claudeItem.LinkType -eq "SymbolicLink") {
+    $candidates += Join-Path $claudeItem.Target "Config"
+}
+$candidates += "D:\CLAUDE CODE\Config", "D:\claude-config", "$env:USERPROFILE\.claude\Config"
+$configRepo = $candidates | Where-Object { $_ -and (Test-Path "$_\.git") } | Select-Object -First 1
+if (-not $configRepo) { Write-Error "Config repo tidak ditemukan di kandidat manapun!"; exit 1 }
+Write-Host "Config repo ditemukan: $configRepo"
+```
+
+Simpan nilai `$configRepo` ini — gunakan sebagai base path di semua step berikutnya (gantikan semua referensi path config repo).
+
+---
+
 ## Step 1 — Pull dari GitHub
 
 Ambil perubahan terbaru dari GitHub (bisa ada update dari perangkat lain):
 
 ```powershell
-cd D:\claude-config
+cd "<configRepo dari Step 0>"
 git pull
 ```
 
@@ -63,7 +83,7 @@ Jika `PROGRESS.md` belum ada → buat baru dengan header dan section pertama.
 Review sesi dan identifikasi hal baru yang perlu disimpan ke memory. Cek setiap kategori:
 
 **Feedback** — apakah user memberikan koreksi, preferensi, atau konfirmasi pendekatan yang non-obvious?
-- Jika ya → update file yang relevan di `D:\claude-config\memory\feedback_*.md`
+- Jika ya → update file yang relevan di `<configRepo>\memory\feedback_*.md`
 - Jika ada feedback baru yang belum punya file → buat file baru dengan format frontmatter yang benar
 
 **User** — apakah ada info baru tentang role, keahlian, atau preferensi user yang terungkap?
@@ -91,7 +111,7 @@ type: [feedback | user | project | reference]
 ## Step 4 — Update MEMORY.md Index
 
 Jika ada memory file baru atau yang diupdate signifikan di Step 3:
-- Buka `D:\claude-config\memory\MEMORY.md`
+- Buka `<configRepo>\memory\MEMORY.md`
 - Tambahkan atau update entri yang relevan (format: `- [Judul](file.md) — satu kalimat hook`)
 - Pastikan index tidak melebihi 200 baris
 
@@ -100,9 +120,9 @@ Jika ada memory file baru atau yang diupdate signifikan di Step 3:
 ## Step 5 — Update Skills Registry (jika ada skill baru)
 
 Jika dalam sesi ini user menyebut skill baru yang diinstall atau repo skill baru:
-- Buka `D:\claude-config\skills-registry.md`
+- Buka `<configRepo>\skills-registry.md`
 - Tambahkan entri baru di tabel yang sesuai (Marketplace / Manual / Custom)
-- Jika custom skill → pastikan filenya ada di `D:\claude-config\custom-skills\`
+- Jika custom skill → pastikan filenya ada di `<configRepo>\custom-skills\`
 
 Jika tidak ada skill baru → skip step ini.
 
@@ -112,12 +132,12 @@ Jika tidak ada skill baru → skip step ini.
 
 Cek apakah ada perubahan di file-file berikut yang terjadi di sesi ini (selain memory dan PROGRESS.md):
 
-- `D:\claude-config\CLAUDE.md` — ada rule baru atau perubahan behavior?
-- `D:\claude-config\commands\` — ada command baru atau yang diubah?
-- `D:\claude-config\custom-skills\` — ada custom skill baru atau yang diubah?
-- `D:\claude-config\setup.ps1` — ada perubahan script setup?
-- `D:\claude-config\README.md` — ada perubahan dokumentasi?
-- `D:\claude-config\SETUP_PROMPT.md` — ada perubahan instruksi setup?
+- `<configRepo>\CLAUDE.md` — ada rule baru atau perubahan behavior?
+- `<configRepo>\commands\` — ada command baru atau yang diubah? (termasuk file up.md ini jika diubah)
+- `<configRepo>\custom-skills\` — ada custom skill baru atau yang diubah?
+- `<configRepo>\setup.ps1` — ada perubahan script setup?
+- `<configRepo>\README.md` — ada perubahan dokumentasi?
+- `<configRepo>\SETUP_PROMPT.md` — ada perubahan instruksi setup?
 
 Jika ada file yang berubah tapi belum masuk ke staging → pastikan ikut di-commit di Step 7.
 
@@ -126,7 +146,7 @@ Jika ada file yang berubah tapi belum masuk ke staging → pastikan ikut di-comm
 ## Step 7 — Commit & Push ke GitHub
 
 ```powershell
-cd D:\claude-config
+cd "<configRepo dari Step 0>"
 git add -A
 git diff --cached --quiet || git commit -m "sync: $(Get-Date -Format 'yyyy-MM-dd')"
 git push
@@ -139,7 +159,7 @@ git push
 Pastikan local sudah in-sync dengan GitHub:
 
 ```powershell
-cd D:\claude-config
+cd "<configRepo dari Step 0>"
 git status
 git log --oneline -3
 git fetch origin
@@ -160,6 +180,7 @@ Sampaikan ringkasan apa saja yang diupdate:
 
 ```
 /up selesai:
+- Config repo: <path yang dideteksi di Step 0>
 - GitHub pull: ✅ up to date / [X commit pulled dari remote]
 - PROGRESS.md: ✅ diupdate
 - Memory files: [X file diupdate / tidak ada yang baru]
