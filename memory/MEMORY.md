@@ -12,3 +12,5 @@
 - [Performance Rules](feedback_performance.md) — cek re-render, memory leak, lazy loading, bundle size, image optimization
 - [Autonomous Engineer Mode](feedback_autonomous_engineer.md) — laporkan bad architecture, hidden bug, security concern meskipun tidak diminta
 - [POS / Cashier Priority](feedback_pos_priority.md) — transaction stability, role permission, jangan break cashier workflow
+- [GitHub Identity](user_github.md) — GitHub username Gugugagaaha, repo config: Repo-Ai (private), git credentials sudah ada di Credential Manager
+- [Git vs gh CLI](feedback_git_credentials.md) — cek git credentials dulu via git ls-remote, pakai git langsung kalau bisa, gh hanya fallback
