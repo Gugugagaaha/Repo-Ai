@@ -5,3 +5,6 @@ Thumbs.db
 # Editor
 .vscode/
 *.swp
+
+# Cache clone repos (diisi saat /updateskills, tidak perlu di-commit)
+skills-cache/
