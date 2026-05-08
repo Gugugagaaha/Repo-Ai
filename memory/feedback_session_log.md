@@ -20,6 +20,13 @@ User minta gw aktif backup ringkasan percakapan tiap ~10 prompt supaya kalau tok
 ### Status:
 ```
 
-**Why:** Token bisa habis kapan saja di tengah session panjang. Tanpa backup, context hilang total dan session berikutnya mulai dari nol.
+**Why:** Token bisa habis kapan saja di tengah session panjang. Tanpa backup, context hilang total dan session berikutnya harus jelasin ulang dari awal — buang waktu dan buang token. Ini MANDATORY, bukan opsional.
 
-**How to apply:** Di setiap response ke-10 (atau saat milestone besar), sebelum lanjut task, tulis summary dulu ke SESSION_LOG.md. Jangan skip meskipun lagi di tengah task penting — justru itu saat paling kritis untuk backup.
+**How to apply:**
+- **WAJIB** update SESSION_LOG.md setiap 10 prompt — tidak boleh skip, tidak ada pengecualian
+- Hitung prompt sendiri dari awal session atau dari update terakhir
+- Kalau lagi di tengah task sekalipun → selesaikan task dulu, LANGSUNG update setelahnya, baru lanjut
+- Milestone besar → update PROGRESS.md juga
+- Kalau kelewat → akui dan update segera, jangan dibiarkan makin lama
+
+**INGAT:** User sudah tegas soal ini. Skip = buang waktu user di sesi berikutnya.
