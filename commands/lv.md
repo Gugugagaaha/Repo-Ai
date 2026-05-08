@@ -43,3 +43,11 @@ Langkah-langkah:
 3. Jika `PROGRESS.md` sudah ada → append section baru di bagian paling bawah (jangan hapus isi sebelumnya)
 4. Jika `PROGRESS.md` belum ada → buat file baru dengan header dan section pertama
 5. Konfirmasi ke user bahwa backup berhasil disimpan beserta path file-nya
+6. Sync ke GitHub — jalankan perintah berikut secara berurutan via Bash:
+   ```
+   cd D:/claude-config && git add -A
+   git diff --cached --quiet || git commit -m "sync: session recap + memory update $(date +%Y-%m-%d)"
+   git push
+   ```
+   Jika tidak ada perubahan (git diff --cached --quiet sukses), skip commit tapi tetap push.
+   Laporkan hasil push ke user (sukses / error).
