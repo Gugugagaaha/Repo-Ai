@@ -71,3 +71,24 @@ Tidak ada task coding. Session ini diskusi investasi & portofolio saham user.
 Tidak ada task coding aktif.
 
 ---
+
+## 2026-05-09 | PC | D:\CLAUDE CODE\app | Prompt 29–39
+
+### Topik yang dibahas:
+1. Update /up skill — tambah safety check deteksi file terhapus (Step 1, 1.5, 1.6) sebelum push
+2. Diskusi sinkronisasi Claude Code CLI vs Web — tidak bisa native, workaround via SESSION_LOG+PROGRESS+memory
+3. Konfirmasi SESSION_LOG + PROGRESS + memory = tiga lapisan history pengganti
+4. Request /history command — ganti/tambah dari /updateskills, load memory+progress+session saat buka sesi baru
+5. Temuan gap di /updateskills: hardcode path D:/claude-config + custom skill dari repo tidak auto-link ke device lain
+6. Format tanggal diupdate ke YYYY-MM-DD HH:mm WIB (include jam untuk audit)
+7. Plan: fix /updateskills → update format → buat /history (prioritas urutan ini)
+
+### Keputusan:
+- /history = command BARU (bukan ganti updateskills), updateskills tetap ada
+- /updateskills perlu fix: auto-detect path + tambah step sync custom skill repo→local
+- Format timestamp semua update: YYYY-MM-DD HH:mm WIB
+
+### Status:
+Sedang mengerjakan fix /updateskills.
+
+---

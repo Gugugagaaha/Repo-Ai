@@ -109,7 +109,7 @@ Review percakapan sesi ini dari awal hingga akhir, susun ringkasan dengan format
 ```
 ---
 
-## Sesi [TANGGAL HARI INI] — [WAKTU jika diketahui]
+## Sesi [YYYY-MM-DD HH:mm WIB]
 
 **Konteks / Topik Utama:**
 [1-2 kalimat tentang apa yang dikerjakan di sesi ini]
