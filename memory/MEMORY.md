@@ -17,3 +17,5 @@
 - [Konfirmasi file target](feedback_confirm_target_file.md) — pastikan file yang diedit adalah file yang dimaksud user, bukan file lain yang konteksnya mirip
 - [Jangan hardcode path di skill/command](feedback_no_hardcode_paths.md) — skill/command harus auto-detect path karena user punya multiple machine dengan struktur beda
 - [Setup environment PC](reference_pc_environment.md) — struktur symlink dan path config repo di PC (beda dari laptop)
+- [POS Furniture — Status Project](project_pos_furniture.md) — phase selesai, tech stack, keputusan arsitektur, pending backlog
+- [POS Furniture — GitHub Repo](reference_pos_furniture_repo.md) — URL repo, branch main, catatan force push
