@@ -17,6 +17,23 @@ Di awal setiap session, jika file `PROGRESS.md` ada di direktori project saat in
 
 ---
 
+## Prompt Analysis & Confirmation Rules
+
+Setiap kali menerima prompt dari user, lakukan ini sebelum eksekusi:
+
+1. **Analisa prompt** — identifikasi apa yang diminta, konteks, dan skill/tool yang paling relevan untuk membantu eksekusi
+2. **Pilih skill yang tepat** — jika ada skill yang mempermudah eksekusi, aktifkan sebelum mulai
+3. **Jabarkan pemahaman** — sampaikan ke user:
+   - Apa yang gw pahami dari prompt ini
+   - Apa yang akan gw lakukan (langkah-langkah utama)
+   - Skill/tool apa yang akan dipakai
+4. **Tunggu konfirmasi** — jangan eksekusi apapun sebelum user setuju
+5. **Eksekusi** — baru lakukan setelah user konfirmasi
+
+Pengecualian: pertanyaan singkat atau request yang sudah sangat jelas dan tidak berisiko (misal "apa itu X?") tidak perlu konfirmasi dulu.
+
+---
+
 ## Workflow Rules
 Jangan langsung execute atau mengubah apapun sebelum memahami context project atau perintahnya.
 
