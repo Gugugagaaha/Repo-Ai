@@ -4,7 +4,7 @@
 #
 # Usage:
 #   .\setup.ps1
-#   .\setup.ps1 -ProjectPath "D:\path\ke\project\utama"
+#   .\setup.ps1 -RepoPath "D:\custom\path\claude-config" -ProjectPath "D:\path\ke\project\utama"
 
 param(
     [string]$RepoPath = $PSScriptRoot,

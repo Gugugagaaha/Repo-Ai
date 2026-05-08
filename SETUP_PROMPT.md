@@ -13,27 +13,27 @@ Setup ini menggunakan symlinks agar semua perubahan otomatis ter-sync ke repo.
 
 **Yang perlu dilakukan:**
 
-1. **Clone repo config** ke `D:\claude-config\`:
-   ```
-   git clone https://github.com/Gugugagaaha/Repo-Ai.git D:\claude-config
-   ```
-   Jika folder `D:\claude-config` sudah ada → lakukan `git pull` saja di dalamnya.
+1. **Tanya user** dua hal sebelum mulai:
+   - "Di mana kamu mau menyimpan folder config ini? (contoh: `D:\claude-config`)"
+   - "Di mana project utama kamu? (contoh: `D:\2. Office\5. Ai\Claude`) — ini untuk symlink memory"
+   Tunggu jawaban user, lalu gunakan path tersebut untuk semua langkah berikutnya. Sebut variabel ini sebagai `<REPO_PATH>` dan `<PROJECT_PATH>`.
 
-2. **Jalankan setup script** untuk membuat symlinks:
+2. **Clone repo config** ke `<REPO_PATH>` yang disebutkan user:
    ```
-   cd D:\claude-config
-   .\setup.ps1
+   git clone https://github.com/Gugugagaaha/Repo-Ai.git <REPO_PATH>
    ```
-   Default project path: `D:\2. Office\5. Ai\Claude`
-   Jika project di perangkat ini ada di path lain, jalankan:
+   Jika folder `<REPO_PATH>` sudah ada dan sudah berisi repo → lakukan `git pull` saja di dalamnya.
+
+3. **Jalankan setup script** untuk membuat symlinks:
    ```
-   .\setup.ps1 -ProjectPath "D:\path\ke\project\utama"
+   cd <REPO_PATH>
+   .\setup.ps1 -RepoPath "<REPO_PATH>" -ProjectPath "<PROJECT_PATH>"
    ```
 
-3. **Verifikasi symlinks** berhasil dibuat:
-   - `C:\Users\<username>\.claude\CLAUDE.md` → harus symlink ke `D:\claude-config\CLAUDE.md`
-   - `C:\Users\<username>\.claude\commands\` → harus symlink ke `D:\claude-config\commands\`
-   - `<ProjectPath>\.claude\projects\<encoded-path>\memory\` → harus symlink ke `D:\claude-config\memory\`
+4. **Verifikasi symlinks** berhasil dibuat:
+   - `C:\Users\<username>\.claude\CLAUDE.md` → harus symlink ke `<REPO_PATH>\CLAUDE.md`
+   - `C:\Users\<username>\.claude\commands\` → harus symlink ke `<REPO_PATH>\commands\`
+   - `<PROJECT_PATH>\.claude\projects\<encoded-path>\memory\` → harus symlink ke `<REPO_PATH>\memory\`
 
 4. **Cek isi** file CLAUDE.md dan memory sudah terbaca dengan benar.
 
