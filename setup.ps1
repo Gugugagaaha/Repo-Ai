@@ -42,5 +42,20 @@ if (Test-Path $memoryTarget) { Remove-Item $memoryTarget -Recurse -Force }
 New-Item -ItemType SymbolicLink -Path $memoryTarget -Target "$RepoPath\memory" | Out-Null
 Write-Host "[OK] memory/ symlink -> $memoryTarget" -ForegroundColor Green
 
+# 4. Custom skills symlinks
+$customSkillsPath = "$RepoPath\custom-skills"
+if (Test-Path $customSkillsPath) {
+    $skillsDir = "$env:USERPROFILE\.claude\skills"
+    if (-not (Test-Path $skillsDir)) { New-Item -ItemType Directory -Path $skillsDir -Force | Out-Null }
+    Get-ChildItem $customSkillsPath -Directory | ForEach-Object {
+        $target = "$skillsDir\$($_.Name)"
+        if (Test-Path $target) { Remove-Item $target -Recurse -Force }
+        New-Item -ItemType SymbolicLink -Path $target -Target $_.FullName | Out-Null
+        Write-Host "[OK] custom skill symlink: $($_.Name)" -ForegroundColor Green
+    }
+}
+
 Write-Host ""
 Write-Host "Setup selesai! Restart Claude Code jika sedang berjalan." -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Untuk install marketplace skills, baca: skills-registry.md" -ForegroundColor Yellow
