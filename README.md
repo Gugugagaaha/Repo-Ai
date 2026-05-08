@@ -11,26 +11,7 @@ Repo ini berisi konfigurasi Claude Code personal: global rules, custom slash com
 
 ---
 
-### Step 1 — Cek Status Instalasi Claude Code
-
-Jalankan perintah ini untuk cek kondisi `~/.claude/`:
-
-```powershell
-Get-ChildItem "$env:USERPROFILE\.claude\" -ErrorAction SilentlyContinue
-```
-
-**Tentukan status:**
-
-| Kondisi | Status |
-|---|---|
-| Folder tidak ada, atau hanya ada file default Claude Code (tanpa `CLAUDE.md` custom, tanpa `commands/` berisi custom command) | **Fresh install** |
-| Ada `CLAUDE.md` custom, ada `commands/` berisi custom command, ada `memory/` | **Sudah ada config** |
-
-Catat status ini — dipakai di Step 4.
-
----
-
-### Step 1b — Cek Akses GitHub
+### Step 1 — Cek Akses GitHub
 
 Cek apakah git credentials sudah tersimpan di Windows Credential Manager:
 
@@ -52,7 +33,26 @@ Tunggu sampai user konfirmasi sudah bisa akses, lalu lanjut ke Step 2.
 
 ---
 
-### Step 2 — Tanya Path Tujuan
+### Step 2 — Cek Status Instalasi Claude Code
+
+Jalankan perintah ini untuk cek kondisi `~/.claude/`:
+
+```powershell
+Get-ChildItem "$env:USERPROFILE\.claude\" -ErrorAction SilentlyContinue
+```
+
+**Tentukan status:**
+
+| Kondisi | Status |
+|---|---|
+| Folder tidak ada, atau hanya ada file default Claude Code (tanpa `CLAUDE.md` custom, tanpa `commands/` berisi custom command) | **Fresh install** |
+| Ada `CLAUDE.md` custom, ada `commands/` berisi custom command, ada `memory/` | **Sudah ada config** |
+
+Catat status ini — dipakai di Step 5.
+
+---
+
+### Step 3 — Tanya Path Tujuan
 
 Tanya user:
 
@@ -62,7 +62,7 @@ Tunggu jawaban → sebut sebagai `<NEW_CLAUDE_PATH>`.
 
 ---
 
-### Step 3 — Pindahkan ~/.claude/ ke Path Baru
+### Step 4 — Pindahkan ~/.claude/ ke Path Baru
 
 Jalankan secara berurutan:
 
@@ -95,7 +95,7 @@ Output harus menunjukkan `LinkType: SymbolicLink` dan `Target: <NEW_CLAUDE_PATH>
 
 ---
 
-### Step 4 — Cek Apakah Perlu Restart Claude Code
+### Step 5 — Cek Apakah Perlu Restart Claude Code
 
 Lakukan tes sederhana — buat file di path baru dan cek via symlink:
 
@@ -106,7 +106,7 @@ Remove-Item "$env:USERPROFILE\.claude\__test_symlink__.tmp" -Force
 Write-Host "Symlink aktif: $exists"
 ```
 
-**Jika output `Symlink aktif: True` → tidak perlu restart, lanjut ke Step 5.**
+**Jika output `Symlink aktif: True` → tidak perlu restart, lanjut ke Step 6.**
 
 **Jika symlink tidak aktif atau ada error:**
 
@@ -116,7 +116,7 @@ Simpan checkpoint ke `<NEW_CLAUDE_PATH>\setup-checkpoint.md`:
 # Setup Checkpoint
 Status: Pindah path selesai — menunggu restart Claude Code
 New Claude Path: <NEW_CLAUDE_PATH>
-Next Step: Lanjut ke Step 5 — clone repo dan install config
+Next Step: Lanjut ke Step 6 — clone repo dan install config
 Repo: https://github.com/Gugugagaaha/Repo-Ai
 
 Instruksi setelah restart: ketik "lanjutkan setup Claude Code"
@@ -130,7 +130,7 @@ Lalu sampaikan ke user:
 
 ---
 
-### Step 4b — Lanjutkan Setelah Restart
+### Step 5b — Lanjutkan Setelah Restart
 
 Jika user mengetik *"lanjutkan setup Claude Code"*:
 
@@ -140,7 +140,7 @@ Jika user mengetik *"lanjutkan setup Claude Code"*:
 
 ---
 
-### Step 5 — Tanya Info untuk Clone Repo
+### Step 6 — Tanya Info untuk Clone Repo
 
 Tanya user dua hal:
 
@@ -153,7 +153,7 @@ Tunggu jawaban. Tentukan:
 
 ---
 
-### Step 6 — Clone & Install Config dari Repo
+### Step 7 — Clone & Install Config dari Repo
 
 ```powershell
 # Clone repo (atau pull jika sudah ada)
@@ -175,7 +175,7 @@ cd "<REPO_PATH>"
 
 ---
 
-### Step 7 — Verifikasi Akhir
+### Step 8 — Verifikasi Akhir
 
 Cek semua symlinks sudah benar:
 
