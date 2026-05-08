@@ -30,6 +30,28 @@ Catat status ini — dipakai di Step 4.
 
 ---
 
+### Step 1b — Cek Akses GitHub
+
+Cek apakah git credentials sudah tersimpan di Windows Credential Manager:
+
+```powershell
+git ls-remote https://github.com/Gugugagaaha/Repo-Ai.git HEAD 2>&1
+```
+
+**Jika berhasil (tidak muncul error credential):**
+→ Git sudah punya credentials tersimpan. Lanjut pakai `git` langsung untuk semua operasi clone/pull. Tidak perlu `gh auth login`.
+
+**Jika muncul error credentials / authentication failed:**
+→ Perlu autentikasi dulu. Sampaikan ke user:
+
+> "Git belum punya akses ke GitHub di perangkat ini. Pilih salah satu cara login:
+> 1. Jalankan `! gh auth login` (perlu GitHub CLI terinstall)
+> 2. Atau masukkan Personal Access Token saat git meminta password"
+
+Tunggu sampai user konfirmasi sudah bisa akses, lalu lanjut ke Step 2.
+
+---
+
 ### Step 2 — Tanya Path Tujuan
 
 Tanya user:
