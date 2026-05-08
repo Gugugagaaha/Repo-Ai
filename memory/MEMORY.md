@@ -14,3 +14,4 @@
 - [POS / Cashier Priority](feedback_pos_priority.md) — transaction stability, role permission, jangan break cashier workflow
 - [GitHub Identity](user_github.md) — GitHub username Gugugagaaha, repo config: Repo-Ai (private), git credentials sudah ada di Credential Manager
 - [Git vs gh CLI](feedback_git_credentials.md) — cek git credentials dulu via git ls-remote, pakai git langsung kalau bisa, gh hanya fallback
+- [Konfirmasi file target](feedback_confirm_target_file.md) — pastikan file yang diedit adalah file yang dimaksud user, bukan file lain yang konteksnya mirip
