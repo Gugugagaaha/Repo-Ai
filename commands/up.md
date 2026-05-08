@@ -1,26 +1,13 @@
 ---
 name: up
-description: Full 2-way sync — pull dari GitHub, update semua komponen sesi ini, push balik ke GitHub, lalu verifikasi local == remote
+description: Full 2-way sync — update semua komponen sesi ini, pull dari GitHub, push balik ke GitHub, lalu verifikasi local == remote
 ---
 
 Lakukan full sync sesi ini. Ikuti semua langkah berikut secara berurutan.
 
 ---
 
-## Step 1 — Pull dari GitHub
-
-Ambil perubahan terbaru dari GitHub (bisa ada update dari perangkat lain):
-
-```powershell
-cd D:\claude-config
-git pull
-```
-
-Jika ada conflict → selesaikan conflict dulu sebelum lanjut. Laporkan ke user jika terjadi conflict.
-
----
-
-## Step 2 — Update PROGRESS.md
+## Step 1 — Update PROGRESS.md
 
 Review percakapan sesi ini dari awal hingga akhir, susun ringkasan dengan format berikut, lalu append ke `PROGRESS.md` di direktori project saat ini:
 
@@ -55,6 +42,19 @@ Review percakapan sesi ini dari awal hingga akhir, susun ringkasan dengan format
 ```
 
 Jika `PROGRESS.md` belum ada → buat baru dengan header dan section pertama.
+
+---
+
+## Step 2 — Pull dari GitHub
+
+Ambil perubahan terbaru dari GitHub (bisa ada update dari perangkat lain):
+
+```powershell
+cd D:\claude-config
+git pull
+```
+
+Jika ada conflict → selesaikan conflict dulu sebelum lanjut. Laporkan ke user jika terjadi conflict.
 
 ---
 
