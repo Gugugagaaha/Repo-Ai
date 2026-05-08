@@ -14,11 +14,11 @@ Setup ini menggunakan symlinks agar semua perubahan otomatis ter-sync ke repo.
 **Yang perlu dilakukan:**
 
 1. **Tanya user** dua hal sebelum mulai:
-   - "Di mana kamu mau menyimpan folder config ini? (contoh: `D:\claude-config`)"
+   - "Di drive/folder mana repo config mau disimpan? (contoh: `D:\` atau `C:\Users\nama\Documents`) — folder `claude-config` akan dibuat otomatis di dalamnya"
    - "Di mana project utama kamu? (contoh: `D:\2. Office\5. Ai\Claude`) — ini untuk symlink memory"
-   Tunggu jawaban user, lalu gunakan path tersebut untuk semua langkah berikutnya. Sebut variabel ini sebagai `<REPO_PATH>` dan `<PROJECT_PATH>`.
+   Tunggu jawaban user. Lalu tentukan: `<REPO_PATH>` = `<BASE_PATH>\claude-config`, `<PROJECT_PATH>` = jawaban kedua.
 
-2. **Clone repo config** ke `<REPO_PATH>` yang disebutkan user:
+2. **Clone repo config** ke `<REPO_PATH>`:
    ```
    git clone https://github.com/Gugugagaaha/Repo-Ai.git <REPO_PATH>
    ```
@@ -27,8 +27,9 @@ Setup ini menggunakan symlinks agar semua perubahan otomatis ter-sync ke repo.
 3. **Jalankan setup script** untuk membuat symlinks:
    ```
    cd <REPO_PATH>
-   .\setup.ps1 -RepoPath "<REPO_PATH>" -ProjectPath "<PROJECT_PATH>"
+   .\setup.ps1 -ProjectPath "<PROJECT_PATH>"
    ```
+   (`-RepoPath` tidak perlu diisi — script otomatis pakai folder tempat ia berada via `$PSScriptRoot`)
 
 4. **Verifikasi symlinks** berhasil dibuat:
    - `C:\Users\<username>\.claude\CLAUDE.md` → harus symlink ke `<REPO_PATH>\CLAUDE.md`
