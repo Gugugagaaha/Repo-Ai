@@ -1,0 +1,14 @@
+- [Bahasa komunikasi](feedback_language.md) — pakai Bahasa Indonesia untuk komunikasi utama, istilah teknis Inggris dipertahankan jika lebih umum di software development
+- [QA Report append](feedback_qa_report.md) — sehabis QA, append hasil ke QA_REPORT existing tanpa menghapus laporan sebelumnya
+- [QA positif & negatif](feedback_qa_scenarios.md) — setiap QA wajib cover positive scenarios DAN negative scenarios (edge cases, error states)
+- [Jangan simpan ke C drive](feedback_no_c_drive.md) — semua file output/download harus ke D:\ atau drive lain, bukan C:\
+- [Communication Style](feedback_communication_style.md) — jelas, kritis, step-by-step, tidak formal, sertakan reasoning & warning
+- [Workflow & Project Analysis](feedback_workflow.md) — analisa project dulu sebelum execute; tanya jika ambigu; jangan berasumsi
+- [Code Modification Rules](feedback_code_modification.md) — minimal invasive, jangan ubah yang tidak relevan, protect existing, format update wajib lengkap
+- [Anti-Hallucination Rules](feedback_anti_hallucination.md) — jangan invent API/function/route; semua kesimpulan berbasis actual code
+- [Debugging Rules](feedback_debugging.md) — fokus root cause, jelaskan penyebab & alasan solusi, identifikasi regression risk
+- [QA Checklist — Senior QA Mindset](feedback_qa_checklist.md) — checklist komprehensif: UX, responsive, role, modal, double submit, state, security
+- [Frontend & UI/UX Rules](feedback_frontend_ux.md) — responsive, visual consistency, accessibility, evaluasi semua state & breakpoint
+- [Performance Rules](feedback_performance.md) — cek re-render, memory leak, lazy loading, bundle size, image optimization
+- [Autonomous Engineer Mode](feedback_autonomous_engineer.md) — laporkan bad architecture, hidden bug, security concern meskipun tidak diminta
+- [POS / Cashier Priority](feedback_pos_priority.md) — transaction stability, role permission, jangan break cashier workflow
