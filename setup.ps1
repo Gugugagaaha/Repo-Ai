@@ -13,19 +13,21 @@ param(
 )
 
 $claudeConfig = "$env:USERPROFILE\.claude"
+$encodedPath = ""
 
-# === Auto-detect ProjectPath jika tidak di-pass ===
-if (-not $ProjectPath) {
+# === Resolve project path: param > auto-detect > fallback cwd ===
+if ($ProjectPath) {
+    # User pass manual → encode normally
+    $encodedPath = $ProjectPath -replace '[:\\]', '-' -replace '\s', '-' -replace '--+', '-'
+} else {
     $projectsDir = "$claudeConfig\projects"
     if (Test-Path $projectsDir) {
         $existingProjects = Get-ChildItem $projectsDir -Directory -ErrorAction SilentlyContinue
         if ($existingProjects.Count -eq 1) {
-            # Decode folder name balik ke path: "D--CLAUDE-CODE-app" -> "D:\CLAUDE CODE\app" (best-effort)
-            $encoded = $existingProjects[0].Name
-            # Replace pertama "-" jadi ":\", sisanya "-" jadi "\" (heuristic — bisa salah untuk folder yang punya "-" di nama asli)
-            $decoded = $encoded -replace '^([A-Z])-', '$1:\' -replace '-', '\'
-            Write-Host "[auto-detect] ProjectPath: $decoded (dari folder existing)" -ForegroundColor Yellow
-            $ProjectPath = $decoded
+            # Pakai encoded folder name langsung — decode/re-encode lossy karena " " dan "\" sama-sama jadi "-"
+            $encodedPath = $existingProjects[0].Name
+            $ProjectPath = "<auto-detected: $encodedPath>"
+            Write-Host "[auto-detect] Encoded folder: $encodedPath" -ForegroundColor Yellow
         } elseif ($existingProjects.Count -gt 1) {
             Write-Host "Ada beberapa project terdeteksi di $projectsDir :" -ForegroundColor Yellow
             $existingProjects | ForEach-Object { Write-Host "  - $($_.Name)" }
@@ -34,9 +36,10 @@ if (-not $ProjectPath) {
         }
     }
 
-    if (-not $ProjectPath) {
+    if (-not $encodedPath) {
         # Fallback: pakai working directory saat ini sebagai project default
         $ProjectPath = (Get-Location).Path
+        $encodedPath = $ProjectPath -replace '[:\\]', '-' -replace '\s', '-' -replace '--+', '-'
         Write-Host "[fallback] ProjectPath: $ProjectPath (current working dir)" -ForegroundColor Yellow
     }
 }
@@ -60,8 +63,7 @@ New-Item -ItemType SymbolicLink -Path $commandsTarget -Target "$RepoPath\command
 Write-Host "[OK] commands/ symlink" -ForegroundColor Green
 
 # 3. memory/ folder (project-specific)
-# Encode project path ke format yang digunakan Claude Code
-$encodedPath = $ProjectPath -replace '[:\\]', '-' -replace '\s', '-' -replace '--+', '-'
+# $encodedPath sudah diset di atas (auto-detect atau encode dari ProjectPath)
 $memoryDir = "$claudeConfig\projects\$encodedPath"
 if (-not (Test-Path $memoryDir)) { New-Item -ItemType Directory -Path $memoryDir -Force | Out-Null }
 
