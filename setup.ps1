@@ -3,15 +3,43 @@
 # Script ini membuat symlinks dari ~/.claude/ ke repo ini.
 #
 # Usage:
-#   .\setup.ps1
-#   .\setup.ps1 -RepoPath "D:\custom\path\claude-config" -ProjectPath "D:\path\ke\project\utama"
+#   .\setup.ps1                                          # auto-detect ProjectPath dari folder existing
+#   .\setup.ps1 -ProjectPath "D:\path\ke\project\utama"  # specify manual
+#   .\setup.ps1 -RepoPath "D:\custom\path\claude-config" -ProjectPath "..."
 
 param(
     [string]$RepoPath = $PSScriptRoot,
-    [string]$ProjectPath = "D:\2. Office\5. Ai\Claude"
+    [string]$ProjectPath = ""
 )
 
 $claudeConfig = "$env:USERPROFILE\.claude"
+
+# === Auto-detect ProjectPath jika tidak di-pass ===
+if (-not $ProjectPath) {
+    $projectsDir = "$claudeConfig\projects"
+    if (Test-Path $projectsDir) {
+        $existingProjects = Get-ChildItem $projectsDir -Directory -ErrorAction SilentlyContinue
+        if ($existingProjects.Count -eq 1) {
+            # Decode folder name balik ke path: "D--CLAUDE-CODE-app" -> "D:\CLAUDE CODE\app" (best-effort)
+            $encoded = $existingProjects[0].Name
+            # Replace pertama "-" jadi ":\", sisanya "-" jadi "\" (heuristic — bisa salah untuk folder yang punya "-" di nama asli)
+            $decoded = $encoded -replace '^([A-Z])-', '$1:\' -replace '-', '\'
+            Write-Host "[auto-detect] ProjectPath: $decoded (dari folder existing)" -ForegroundColor Yellow
+            $ProjectPath = $decoded
+        } elseif ($existingProjects.Count -gt 1) {
+            Write-Host "Ada beberapa project terdeteksi di $projectsDir :" -ForegroundColor Yellow
+            $existingProjects | ForEach-Object { Write-Host "  - $($_.Name)" }
+            Write-Error "Multiple projects ditemukan. Specify -ProjectPath manual."
+            exit 1
+        }
+    }
+
+    if (-not $ProjectPath) {
+        # Fallback: pakai working directory saat ini sebagai project default
+        $ProjectPath = (Get-Location).Path
+        Write-Host "[fallback] ProjectPath: $ProjectPath (current working dir)" -ForegroundColor Yellow
+    }
+}
 
 Write-Host "=== Claude Code Config Setup ===" -ForegroundColor Cyan
 Write-Host "Repo   : $RepoPath"

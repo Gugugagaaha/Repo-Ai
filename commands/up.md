@@ -102,9 +102,43 @@ Jika ada conflict → selesaikan dulu, laporkan ke user sebelum lanjut.
 
 ---
 
-## Step 2 — Update PROGRESS.md
+## Step 2 — Update SESSION_LOG.md (mandatory tiap sesi)
 
-Review percakapan sesi ini dari awal hingga akhir, susun ringkasan dengan format berikut, lalu append ke `PROGRESS.md` di direktori project saat ini:
+Append entry baru ke `<configRepo>\SESSION_LOG.md` untuk sesi ini. Format:
+
+```
+---
+
+## YYYY-MM-DD HH:mm WIB | <perangkat: PC/Laptop> | <cwd> | Prompt <range>
+
+### Topik yang dibahas:
+1. [poin singkat 1]
+2. [poin singkat 2]
+- dst.
+
+### Keputusan:
+- [keputusan 1] (tulis "Tidak ada" jika tidak ada)
+
+### Status:
+[ringkasan singkat: ada task coding aktif / sesi diskusi saja / dll]
+```
+
+Aturan:
+- Jam pakai WIB (UTC+7) dari waktu commit
+- Prompt range = total prompt user di sesi ini (estimasi dari `prompt_counter.txt` atau hitung manual dari context)
+- Jangan hapus entry lama — selalu append di bawah
+
+---
+
+## Step 3 — Update PROGRESS.md (global, hanya untuk milestone)
+
+PROGRESS.md sekarang **global** di `<configRepo>\PROGRESS.md` — bukan per-project lagi.
+
+Hanya update PROGRESS.md kalau sesi ini menghasilkan milestone besar / keputusan struktural:
+- Skip kalau cuma diskusi atau task kecil — cukup di SESSION_LOG saja
+- Update kalau ada: keputusan arsitektur, fitur baru selesai, refactor besar, setup tooling baru
+
+Format entry baru di PROGRESS.md:
 
 ```
 ---
@@ -136,11 +170,11 @@ Review percakapan sesi ini dari awal hingga akhir, susun ringkasan dengan format
 [hal penting lain yang perlu diingat — konteks, asumsi, warning. Tulis "Tidak ada" jika tidak relevan]
 ```
 
-Jika `PROGRESS.md` belum ada → buat baru dengan header dan section pertama.
+Jika sesi ini tidak ada milestone → skip step ini, lanjut ke Step 4.
 
 ---
 
-## Step 3 — Update Memory Files
+## Step 4 — Update Memory Files
 
 Review sesi dan identifikasi hal baru yang perlu disimpan ke memory. Cek setiap kategori:
 
@@ -170,16 +204,16 @@ type: [feedback | user | project | reference]
 
 ---
 
-## Step 4 — Update MEMORY.md Index
+## Step 5 — Update MEMORY.md Index
 
-Jika ada memory file baru atau yang diupdate signifikan di Step 3:
+Jika ada memory file baru atau yang diupdate signifikan di Step 4:
 - Buka `<configRepo>\memory\MEMORY.md`
 - Tambahkan atau update entri yang relevan (format: `- [Judul](file.md) — satu kalimat hook`)
 - Pastikan index tidak melebihi 200 baris
 
 ---
 
-## Step 5 — Update Skills Registry (jika ada skill baru)
+## Step 6 — Update Skills Registry (jika ada skill baru)
 
 Jika dalam sesi ini user menyebut skill baru yang diinstall atau repo skill baru:
 - Buka `<configRepo>\skills-registry.md`
@@ -190,7 +224,7 @@ Jika tidak ada skill baru → skip step ini.
 
 ---
 
-## Step 6 — Sync File Repo Lainnya
+## Step 7 — Sync File Repo Lainnya
 
 Cek apakah ada perubahan di file-file berikut yang terjadi di sesi ini (selain memory dan PROGRESS.md):
 
@@ -201,11 +235,11 @@ Cek apakah ada perubahan di file-file berikut yang terjadi di sesi ini (selain m
 - `<configRepo>\README.md` — ada perubahan dokumentasi?
 - `<configRepo>\SETUP_PROMPT.md` — ada perubahan instruksi setup?
 
-Jika ada file yang berubah tapi belum masuk ke staging → pastikan ikut di-commit di Step 7.
+Jika ada file yang berubah tapi belum masuk ke staging → pastikan ikut di-commit di Step 8.
 
 ---
 
-## Step 7 — Commit & Push ke GitHub
+## Step 8 — Commit & Push ke GitHub
 
 Sebelum staging, tampilkan dulu apa yang akan di-commit:
 
@@ -219,17 +253,18 @@ Laporkan ke user secara singkat:
 - File yang dimodifikasi
 - File yang akan dihapus dari remote (kalau ada — hanya kalau user sudah konfirmasi di Step 1.5)
 
-Jika semua sudah sesuai, baru commit & push:
+Jika semua sudah sesuai, baru commit & push (commit message **wajib include jam WIB** untuk audit):
 
 ```powershell
 git add -A
-git diff --cached --quiet || git commit -m "sync: $(Get-Date -Format 'yyyy-MM-dd')"
+$timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm'
+git diff --cached --quiet || git commit -m "sync: $timestamp WIB"
 git push
 ```
 
 ---
 
-## Step 8 — Verifikasi Local == Remote
+## Step 9 — Verifikasi Local == Remote
 
 Pastikan local sudah in-sync dengan GitHub:
 
@@ -249,7 +284,7 @@ Jika masih ada diff → investigasi dan selesaikan sebelum laporan ke user.
 
 ---
 
-## Step 9 — Laporan ke User
+## Step 10 — Laporan ke User
 
 Sampaikan ringkasan apa saja yang diupdate:
 
@@ -258,11 +293,12 @@ Sampaikan ringkasan apa saja yang diupdate:
 - Config repo    : <path yang dideteksi di Step 0>
 - Safety check   : ✅ tidak ada file terhapus / ⚠️ [X file] ditemukan → [restored/deleted]
 - GitHub pull    : ✅ up to date / [X commit pulled dari remote]
-- PROGRESS.md    : ✅ diupdate
+- SESSION_LOG    : ✅ entry baru ditambah (prompt <range>)
+- PROGRESS.md    : ✅ milestone ditambah / skip (bukan milestone)
 - Memory files   : [X file diupdate / tidak ada yang baru]
 - MEMORY.md index: [✅ diupdate / tidak ada perubahan]
 - Skills registry: [✅ diupdate / tidak ada skill baru]
 - File lainnya   : [daftar file yang ikut diupdate / tidak ada]
-- GitHub push    : ✅ pushed / nothing to push
+- GitHub push    : ✅ pushed (commit: sync: YYYY-MM-DD HH:mm WIB) / nothing to push
 - Verifikasi sync: ✅ local == remote
 ```

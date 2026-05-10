@@ -139,7 +139,8 @@ Catat: berapa file baru berhasil di-copy untuk setiap repo.
 ```powershell
 cd $configRepo
 git add -A
-git diff --cached --quiet || git commit -m "sync: updateskills $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+$timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm'
+git diff --cached --quiet || git commit -m "sync: updateskills $timestamp WIB"
 git push
 ```
 

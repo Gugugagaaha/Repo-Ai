@@ -8,3 +8,6 @@ Thumbs.db
 
 # Cache clone repos (diisi saat /updateskills, tidak perlu di-commit)
 skills-cache/
+
+# Local session state — ephemeral, tidak perlu di-repo
+prompt_counter.txt
