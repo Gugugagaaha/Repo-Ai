@@ -117,7 +117,7 @@ Set-Content "$configRepo\prompt_counter.txt" "0"
 Setelah semua konteks dimuat, hitung estimasi token yang sudah terpakai untuk loading context (memory + PROGRESS + SESSION_LOG filter). Ini jadi baseline awal sesi.
 
 ```powershell
-$tokenScript = "D:\CLAUDE CODE\token_counter.py"
+$tokenScript = Join-Path $configRepo "token_counter.py"
 if (Test-Path $tokenScript) {
     # Combine semua konten yang dimuat di /history
     $combined = ""

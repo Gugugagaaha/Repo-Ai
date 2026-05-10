@@ -85,6 +85,47 @@ if (Test-Path $customSkillsPath) {
     }
 }
 
+# 5. Register UserPromptSubmit hook di settings.json
+$hookScript = "$RepoPath\hooks\prompt_counter.ps1"
+$settingsPath = "$claudeConfig\settings.json"
+
+if (Test-Path $hookScript) {
+    $hookCommand = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$hookScript`""
+
+    # Read existing settings (or empty hash)
+    $settings = @{}
+    if (Test-Path $settingsPath) {
+        try {
+            $existing = Get-Content $settingsPath -Raw | ConvertFrom-Json
+            # Convert to hashtable manually (PS 5.1 ga ada -AsHashtable)
+            $existing.PSObject.Properties | ForEach-Object { $settings[$_.Name] = $_.Value }
+        } catch {
+            Write-Host "[WARN] settings.json existing rusak, akan di-overwrite" -ForegroundColor Yellow
+        }
+    }
+
+    # Inject hooks
+    if (-not $settings.ContainsKey("hooks")) { $settings["hooks"] = @{} }
+    $settings["hooks"] = @{
+        "UserPromptSubmit" = @(
+            @{
+                matcher = ""
+                hooks = @(
+                    @{
+                        type = "command"
+                        command = $hookCommand
+                    }
+                )
+            }
+        )
+    }
+
+    $settings | ConvertTo-Json -Depth 10 | Out-File $settingsPath -Encoding utf8
+    Write-Host "[OK] hook UserPromptSubmit registered di settings.json" -ForegroundColor Green
+} else {
+    Write-Host "[skip] hook script tidak ditemukan di $hookScript" -ForegroundColor Yellow
+}
+
 Write-Host ""
 Write-Host "Setup selesai! Restart Claude Code jika sedang berjalan." -ForegroundColor Cyan
 Write-Host ""

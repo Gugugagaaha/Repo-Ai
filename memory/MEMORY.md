@@ -23,3 +23,4 @@
 - [Investasi User — Pluang Portfolio](user_investment.md) — holdings SPY+AMAG, rencana DCA SCHD Rp500k/bulan, tujuan dividend + capital preservation
 - [Boleh pakai multi-skill sekaligus](feedback_multi_skill.md) — invoke semua skill yang relevan tanpa minta izin per skill
 - [Skill discovery — cari skill baru jika kurang optimal](feedback_skill_discovery.md) — tanya dulu, cari dari sumber manapun, wajib aman (bukan malware), propose + command install
+- [Response ringkas](feedback_concise_response.md) — langsung ke inti, detail cuma kalau user explicit minta

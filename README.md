@@ -1,205 +1,252 @@
 # Claude Code — Personal Config Repo
 
-Repo ini berisi konfigurasi Claude Code personal: global rules, custom slash commands, memory files, skill registry, dan setup script untuk sync antar perangkat.
+Repo ini berisi konfigurasi Claude Code personal: global rules, custom slash commands (`/up`, `/history`, `/updateskills`), memory files, skill registry, setup script, dan hook untuk auto-track session.
 
 ---
 
-<!-- CLAUDE_SETUP_INSTRUCTIONS -->
-## Instruksi untuk Claude Code
+## Untuk Manusia
 
-> Jika kamu adalah Claude Code dan user memberikan link repo ini, baca seluruh bagian ini lalu jalankan setup secara otomatis mengikuti urutan step di bawah. Jangan skip step apapun.
+### Setup di Perangkat Baru
+
+**Prerequisite:**
+- Claude Code CLI sudah terinstall (`claude --version` works)
+- Git terinstall
+- Developer Mode aktif (Windows Settings → System → For developers) — untuk symlinks
+- Python 3.x (optional, untuk `token_counter.py`)
 
 ---
 
-### Step 1 — Cek Akses GitHub
+#### **Mode A — Otomatis via Claude Code** (Recommended)
 
-Cek apakah git credentials sudah tersimpan di Windows Credential Manager:
+1. Install Claude Code CLI di perangkat baru
+2. Buka terminal, jalankan `claude`
+3. Kasih prompt:
+
+   > Setup Claude Code config dari https://github.com/Gugugagaaha/Repo-Ai
+
+4. Claude akan fetch README ini, baca section "INSTRUCTIONS FOR CLAUDE" di bawah, lalu eksekusi setup otomatis. Akan ada 1 pertanyaan di akhir (mau migrate `~/.claude` ke partisi lain atau tidak).
+
+---
+
+#### **Mode B — Manual via PowerShell**
+
+```powershell
+# Clone repo ke lokasi default
+git clone https://github.com/Gugugagaaha/Repo-Ai "D:\CLAUDE CODE\Config"
+
+# Run bootstrap
+cd "D:\CLAUDE CODE\Config"
+.\bootstrap.ps1
+```
+
+`bootstrap.ps1` handle: prerequisite check, run `setup.ps1`, install Python deps, register hook, instruksi user untuk lanjut `/updateskills` via Claude, dan tanya migrasi di akhir.
+
+---
+
+### Setelah Setup Selesai
+
+Restart Claude Code, lalu commands berikut ready:
+
+| Command | Fungsi |
+|---|---|
+| `/history` | Restore konteks sesi sebelumnya (load memory + PROGRESS + SESSION_LOG 3 hari terakhir + token counter baseline) |
+| `/up` | Full 2-way sync: pull → update SESSION_LOG/PROGRESS/memory → push → verify |
+| `/updateskills` | Sync skills dua arah: local ↔ GitHub (custom skills + marketplace skills install) |
+
+---
+
+## INSTRUCTIONS FOR CLAUDE
+
+> Jika kamu adalah Claude Code dan user kasih link repo ini, baca section ini dan eksekusi setup otomatis sesuai flow di bawah. Jangan skip step apapun. Konfirmasi ke user kalau ada yang ambigu.
+
+### Flow Overview
+
+```
+Phase 1 — Prereq check (claude, git, python)
+Phase 2 — Cek akses GitHub
+Phase 3 — Clone repo ke default path D:\CLAUDE CODE\Config
+Phase 4 — Run setup.ps1 (symlinks + register hook)
+Phase 5 — Install Python deps (tiktoken)
+Phase 6 — Auto-run /updateskills (install marketplace skills)
+Phase 7 — Tanya user: migrate ~/.claude ke partisi lain? (di akhir, bukan di awal)
+Phase 8 — Migrate kalau yes
+Phase 9 — Verifikasi & laporan
+```
+
+---
+
+### Phase 1 — Prerequisite Check
+
+```powershell
+claude --version
+git --version
+python --version
+```
+
+- `claude` ga ada → halt, suruh user install Claude Code CLI dulu
+- `git` ga ada → halt, suruh user install Git
+- `python` ga ada → flag warning, lanjut tanpa Python (token_counter.py jadi non-functional)
+
+---
+
+### Phase 2 — Cek Akses GitHub
 
 ```powershell
 git ls-remote https://github.com/Gugugagaaha/Repo-Ai.git HEAD 2>&1
 ```
 
-**Jika berhasil (tidak muncul error credential):**
-→ Git sudah punya credentials tersimpan. Lanjut pakai `git` langsung untuk semua operasi clone/pull. Tidak perlu `gh auth login`.
-
-**Jika muncul error credentials / authentication failed:**
-→ Perlu autentikasi dulu. Sampaikan ke user:
-
-> "Git belum punya akses ke GitHub di perangkat ini. Pilih salah satu cara login:
-> 1. Jalankan `! gh auth login` (perlu GitHub CLI terinstall)
-> 2. Atau masukkan Personal Access Token saat git meminta password"
-
-Tunggu sampai user konfirmasi sudah bisa akses, lalu lanjut ke Step 2.
+- Berhasil → lanjut
+- Authentication error → suruh user login dulu via `! gh auth login` atau setup PAT, lalu ulangi
 
 ---
 
-### Step 2 — Cek Status Instalasi Claude Code
+### Phase 3 — Clone Repo ke Default Path
 
-Jalankan perintah ini untuk cek kondisi `~/.claude/`:
+Default path: `D:\CLAUDE CODE\Config`
 
 ```powershell
-Get-ChildItem "$env:USERPROFILE\.claude\" -ErrorAction SilentlyContinue
+$repoPath = "D:\CLAUDE CODE\Config"
+if (Test-Path "$repoPath\.git") {
+    cd $repoPath
+    git pull
+} else {
+    git clone https://github.com/Gugugagaaha/Repo-Ai.git $repoPath
+}
 ```
 
-**Tentukan status:**
-
-| Kondisi | Status |
-|---|---|
-| Folder tidak ada, atau hanya ada file default Claude Code (tanpa `CLAUDE.md` custom, tanpa `commands/` berisi custom command) | **Fresh install** |
-| Ada `CLAUDE.md` custom, ada `commands/` berisi custom command, ada `memory/` | **Sudah ada config** |
-
-Catat status ini — dipakai di Step 5.
+> **Catatan:** path ini bisa di-override kalau user explicit minta path lain. Tapi default = `D:\CLAUDE CODE\Config` (bukan C: karena ada feedback rule "jangan ke C drive").
 
 ---
 
-### Step 3 — Tanya Path Tujuan
+### Phase 4 — Run setup.ps1
 
-Tanya user:
+```powershell
+cd "D:\CLAUDE CODE\Config"
+.\setup.ps1
+```
 
-> "Data Claude Code kamu saat ini tersimpan di `C:\Users\[username]\.claude\`. Supaya tidak ada data Claude di Local Disk C, data ini akan dipindahkan ke drive lain. Mau disimpan di mana? (contoh: `D:\.claude`)"
+`setup.ps1` akan:
+- Bikin symlinks: `CLAUDE.md`, `commands/`, `memory/`, `custom-skills/*`
+- Auto-detect `ProjectPath` dari `~/.claude/projects/` existing, fallback ke cwd
+- Register hook `UserPromptSubmit` di `settings.json`
 
-Tunggu jawaban → sebut sebagai `<NEW_CLAUDE_PATH>`.
+Kalau ada error permission denied → suruh user aktifin Developer Mode.
 
 ---
 
-### Step 4 — Pindahkan ~/.claude/ ke Path Baru
+### Phase 5 — Install Python Deps
 
-Jalankan secara berurutan:
+Kalau Python ada:
+
+```powershell
+pip install tiktoken
+```
+
+Verifikasi:
+```powershell
+python "D:\CLAUDE CODE\Config\token_counter.py" "test"
+```
+
+Output harus tampil token count. Kalau gagal, flag warning ke user — `/history` Step 6 (token counter) ga akan jalan, tapi command tetap functional.
+
+---
+
+### Phase 6 — Auto-run /updateskills
+
+Setelah setup symlinks selesai dan settings.json punya hook, **restart Claude Code** atau invoke `/updateskills` langsung untuk install marketplace skills dari registry.
+
+**PENTING:** Restart Claude Code dulu sebelum invoke `/updateskills` supaya commands & hook ke-load.
+
+```
+/updateskills
+```
+
+Wait sampai selesai. Skills akan ke-symlink dari config repo (custom) dan di-clone dari registry (marketplace).
+
+---
+
+### Phase 7 — Tanya User Migrasi (DI AKHIR)
+
+Setelah semua install selesai dan working, baru tanya user:
+
+```
+Tanya pakai AskUserQuestion:
+"Data Claude Code (~/.claude) saat ini di C:. Mau pindahin ke partisi lain
+supaya tidak ada data Claude di C:?"
+
+Options:
+- Tidak, biarkan di C: (Recommended kalau user happy dengan default)
+- Ya, pindahin ke partisi lain (kasih input path target)
+```
+
+Kalau user pilih **Tidak** → skip ke Phase 9 (verifikasi).
+
+---
+
+### Phase 8 — Migrate ~/.claude (Optional)
+
+⚠️ **Warning ke user dulu:**
+- Claude Code harus di-exit dulu (kecuali kita yang sedang jalan — beri tahu user untuk close session ini setelah migrate)
+- Backup akan dibuat di `~/.claude.bak` sebelum migrate
+- Migrate butuh Developer Mode aktif
 
 ```powershell
 $source = "$env:USERPROFILE\.claude"
-$dest = "<NEW_CLAUDE_PATH>"
+$target = "<USER_INPUT_PATH>"  # misal "D:\CLAUDE CODE"
 
-# 1. Buat folder tujuan
-New-Item -ItemType Directory -Path $dest -Force | Out-Null
-
-# 2. Copy semua isi ke path baru (jika fresh install, folder mungkin kosong — tidak masalah)
-if (Test-Path $source) {
-    Copy-Item "$source\*" $dest -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item $source -Recurse -Force
-}
-
-# 3. Buat symlink ~/.claude/ → <NEW_CLAUDE_PATH>
-New-Item -ItemType SymbolicLink -Path $source -Target $dest
-```
-
-Verifikasi symlink berhasil:
-
-```powershell
-Get-Item "$env:USERPROFILE\.claude" | Select-Object LinkType, Target
-```
-
-Output harus menunjukkan `LinkType: SymbolicLink` dan `Target: <NEW_CLAUDE_PATH>`.
-
-> **Jika muncul error "permission denied":** Aktifkan Developer Mode → Windows Settings → System → For developers → aktifkan "Developer Mode". Lalu ulangi step ini.
-
----
-
-### Step 5 — Cek Apakah Perlu Restart Claude Code
-
-Lakukan tes sederhana — buat file di path baru dan cek via symlink:
-
-```powershell
-New-Item -Path "$env:USERPROFILE\.claude\__test_symlink__.tmp" -ItemType File -Force | Out-Null
-$exists = Test-Path "<NEW_CLAUDE_PATH>\__test_symlink__.tmp"
-Remove-Item "$env:USERPROFILE\.claude\__test_symlink__.tmp" -Force
-Write-Host "Symlink aktif: $exists"
-```
-
-**Jika output `Symlink aktif: True` → tidak perlu restart, lanjut ke Step 6.**
-
-**Jika symlink tidak aktif atau ada error:**
-
-Simpan checkpoint ke `<NEW_CLAUDE_PATH>\setup-checkpoint.md`:
-
-```markdown
-# Setup Checkpoint
-Status: Pindah path selesai — menunggu restart Claude Code
-New Claude Path: <NEW_CLAUDE_PATH>
-Next Step: Lanjut ke Step 6 — clone repo dan install config
-Repo: https://github.com/Gugugagaaha/Repo-Ai
-
-Instruksi setelah restart: ketik "lanjutkan setup Claude Code"
-```
-
-Lalu sampaikan ke user:
-
-> "Symlink sudah dibuat. Tolong **restart Claude Code**, lalu ketik **lanjutkan setup Claude Code** untuk melanjutkan dari titik ini."
-
-**Berhenti di sini sampai user restart.**
-
----
-
-### Step 5b — Lanjutkan Setelah Restart
-
-Jika user mengetik *"lanjutkan setup Claude Code"*:
-
-1. Baca `~/.claude/setup-checkpoint.md` untuk ambil `<NEW_CLAUDE_PATH>` dan status terakhir
-2. Hapus file checkpoint setelah dibaca
-3. Lanjutkan dari Step 5
-
----
-
-### Step 6 — Tanya Info untuk Clone Repo
-
-Tanya user dua hal:
-
-1. "Di drive/folder mana repo config mau disimpan? (contoh: `D:\`) — folder `claude-config` akan dibuat otomatis di dalamnya"
-2. "Di mana project utama kamu? (contoh: `D:\2. Office\5. Ai\Claude`) — untuk symlink memory"
-
-Tunggu jawaban. Tentukan:
-- `<REPO_PATH>` = `<BASE_PATH>\claude-config`
-- `<PROJECT_PATH>` = jawaban kedua
-
----
-
-### Step 7 — Clone & Install Config dari Repo
-
-```powershell
-# Clone repo (atau pull jika sudah ada)
-if (Test-Path "<REPO_PATH>\.git") {
-    cd "<REPO_PATH>"
-    git pull
+# 1. Resolve real path (kalau source udah symlink, target-nya yang sebenarnya)
+$sourceItem = Get-Item $source
+if ($sourceItem.LinkType -eq "SymbolicLink") {
+    Write-Host "[INFO] ~/.claude sudah symlink ke $($sourceItem.Target). Migrate akan re-point."
+    $realSource = $sourceItem.Target
 } else {
-    git clone https://github.com/Gugugagaaha/Repo-Ai.git "<REPO_PATH>"
+    $realSource = $source
 }
+
+# 2. Buat target folder
+if (-not (Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force }
+
+# 3. Move content
+Get-ChildItem $realSource -Force | Move-Item -Destination $target -Force
+
+# 4. Hapus old symlink/folder, buat new symlink
+Remove-Item $source -Force -Recurse
+New-Item -ItemType SymbolicLink -Path $source -Target $target
+
+# 5. Verifikasi
+Get-Item $source | Select-Object LinkType, Target
 ```
 
-```powershell
-# Jalankan setup script
-cd "<REPO_PATH>"
-.\setup.ps1 -ProjectPath "<PROJECT_PATH>"
-```
-
-> Jika `setup.ps1` gagal dieksekusi: jalankan `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` lalu ulangi.
+Kalau migrate gagal di tengah → restore dari backup, laporkan error ke user.
 
 ---
 
-### Step 8 — Verifikasi Akhir
-
-Cek semua symlinks sudah benar:
+### Phase 9 — Verifikasi & Laporan
 
 ```powershell
 @(
     "$env:USERPROFILE\.claude",
     "$env:USERPROFILE\.claude\CLAUDE.md",
     "$env:USERPROFILE\.claude\commands",
-    "$env:USERPROFILE\.claude\skills\notion-design"
+    "$env:USERPROFILE\.claude\settings.json"
 ) | ForEach-Object {
     $item = Get-Item $_ -ErrorAction SilentlyContinue
     [PSCustomObject]@{
-        Path     = $_
-        Exists   = ($null -ne $item)
+        Path = $_
+        Exists = ($null -ne $item)
         IsSymlink = ($item.LinkType -eq "SymbolicLink")
-        Target   = $item.Target
+        Target = $item.Target
     }
 } | Format-Table -AutoSize
 ```
 
-Laporkan hasil ke user:
-- Symlink mana yang berhasil ✅
-- Symlink mana yang gagal ❌ beserta solusinya
-- Instruksikan restart Claude Code untuk aktivasi config baru
+Laporkan ke user:
+- ✅ Setup berhasil
+- ✅ Symlinks valid
+- ✅ Hook registered
+- ✅ Marketplace skills installed
+- (kalau migrate) ✅ ~/.claude di `<target>`
+- Suruh restart Claude Code untuk aktivasi semua
 
 ---
 
@@ -207,10 +254,11 @@ Laporkan hasil ke user:
 
 | Error | Solusi |
 |---|---|
-| Permission denied saat buat symlink | Aktifkan Developer Mode: Windows Settings → System → For developers |
-| Git credential error saat clone | Jalankan `git credential-manager` atau setup PAT di GitHub |
-| `setup.ps1` tidak bisa dieksekusi | `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` |
-| Symlink test gagal setelah dibuat | Restart Claude Code, lalu ketik "lanjutkan setup Claude Code" |
+| Permission denied saat symlink | Aktifkan Developer Mode di Windows Settings |
+| Git auth failed | `! gh auth login` atau setup PAT |
+| setup.ps1 ga bisa execute | `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` |
+| Hook ga jalan setelah restart | Cek `settings.json` punya `hooks.UserPromptSubmit`, path absolute valid |
+| `/updateskills` ga ditemukan | Restart Claude Code dulu — commands baru ke-load setelah symlink |
 
 ---
 
@@ -218,38 +266,24 @@ Laporkan hasil ke user:
 
 | Folder/File | Isi |
 |---|---|
-| `CLAUDE.md` | Global rules & behavior untuk semua sesi Claude Code |
-| `commands/` | Custom slash commands (`/lv`, `/updateskills`) |
-| `memory/` | Memory files yang persisten antar sesi |
-| `custom-skills/` | Custom skills yang dibackup dari perangkat |
-| `skills-registry.md` | Daftar semua sumber skill yang diinstall |
-| `setup.ps1` | Script otomatis untuk membuat symlinks di perangkat baru |
-| `SETUP_PROMPT.md` | Instruksi setup lengkap (referensi detail) |
+| `CLAUDE.md` | Global rules & behavior untuk semua sesi Claude |
+| `commands/` | Custom slash commands (`/up`, `/history`, `/updateskills`) |
+| `memory/` | Memory files yang persisten antar sesi (feedback, user, project, reference) |
+| `custom-skills/` | Custom skills (di-symlink ke `~/.claude/skills/`) |
+| `hooks/prompt_counter.ps1` | Hook UserPromptSubmit — auto-increment counter, trigger reminder per 10 prompt |
+| `skills-registry.md` | Daftar marketplace skills yang di-install via `/updateskills` |
+| `setup.ps1` | Script bikin symlinks + register hook (dipanggil bootstrap atau manual) |
+| `bootstrap.ps1` | Full bootstrap script untuk Mode B manual setup |
+| `token_counter.py` | Tool estimasi token via tiktoken (dipakai `/history` baseline) |
+| `prompt_counter.txt` | Counter file (auto-incremented oleh hook, tidak ikut sync — di-`.gitignore`) |
+| `SESSION_LOG.md` | Log granular per ~10 prompt — auto-append oleh `/up` |
+| `PROGRESS.md` | Milestone besar / keputusan penting (global, lintas project) |
 
 ---
 
-## Untuk Manusia
-
-### Cara setup di perangkat baru
-
-Cukup buka Claude Code dan ketik:
-
-```
-Setup Claude Code dari repo ini: https://github.com/Gugugagaaha/Repo-Ai
-```
-
-Claude akan fetch README ini dan menjalankan setup secara otomatis.
-
-### Commands tersedia setelah setup
-
-| Command | Fungsi |
-|---|---|
-| `/lv` | Backup ringkasan sesi ke PROGRESS.md + auto push ke GitHub |
-| `/updateskills` | Sync skills dua arah: local ↔ GitHub |
-
-### Tambah skill baru
+## Tambah Skill Baru
 
 Bilang ke Claude:
-> "Saya baru install skill dari github.com/xxx/yyy, tambahkan ke registry dan push"
+> Saya install skill baru dari github.com/xxx/yyy, tambahkan ke registry dan push
 
-Claude akan update `skills-registry.md` dan push otomatis.
+Claude akan update `skills-registry.md` dan push otomatis via `/up`.
