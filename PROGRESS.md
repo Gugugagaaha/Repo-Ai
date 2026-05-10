@@ -193,3 +193,42 @@ Bikin sistem bootstrap full untuk perangkat baru: hook auto-increment counter, R
 - Kalau Mode A (Claude execute README), Phase 6 require restart Claude Code dulu sebelum invoke /updateskills
 - Setup.ps1 sekarang juga handle hook registration — jadi setup.ps1 standalone udah lengkap (ga harus via bootstrap.ps1)
 - bootstrap.ps1 add value-nya: prereq check + python pip + migrate prompt + verify yang lebih lengkap
+
+---
+
+## Sesi 2026-05-10 23:16 WIB
+
+**Konteks / Topik Utama:**
+QA mendalam project pos-frontend (KASVER POS) yang menghasilkan 22 findings baru, dilanjutkan dengan upgrade rule WAJIB pakai skill jadi MANDATORY setelah user menemukan gw skip skill di task QA tersebut.
+
+**Poin-Poin Penting:**
+- QA pos-frontend (D:\3. PROJEK\pos-frontend) - project beda dari pos-furniture, stack Vite + React 18 + Zustand + Router 6
+- 22 findings baru (4 Critical, 6 High, 7 Medium, 5 Low) di-append ke QA_REPORT.md (1932 -> 2662 baris)
+- 4 Critical paling impactful: bug akuntansi shift (asumsi semua revenue cash), double-submit payment, order ID collision (generateOrderId pakai length+1), cart loss (no persist middleware)
+- 2 issue lama VERIFIED FIXED: MOCK_TABLES ReferenceError, unit conversion gram-kg
+- Production readiness pos-frontend: 70 -> 38 (NOT production ready, lebih banyak blocker dari yang sebelumnya teridentifikasi)
+- User tanya apakah gw pakai skill di QA - jawaban jujur TIDAK, padahal plan janjiin senior-qa + adversarial-reviewer + senior-frontend
+- User correction TEGAS 3x: WAJIB pakai skill atau cari skill baru kalau tidak ada di daftar
+- feedback_multi_skill.md di-upgrade dari "boleh pakai multi-skill" jadi "WAJIB pakai skill (mandatory)" dengan tabel mapping task -> skill yang harus dipakai
+- MEMORY.md index entry diperbarui
+
+**Keputusan yang Dibuat:**
+- Rule "WAJIB pakai skill" jadi MANDATORY untuk setiap task non-trivial - bukan opsi
+- Plan harus include skill spesifik + EKSEKUSI sesuai plan (tidak boleh skip skill yang udah dijanjiin)
+- Pengecualian sempit: factual question singkat, command sederhana, action trivial 1-langkah
+- QA pos-frontend hasil 22 findings diterima as-is, redo dengan skill di-skip user
+
+**Perubahan yang Dilakukan:**
+- Diupdate: D:\3. PROJEK\pos-frontend\QA_REPORT.md - section baru "QA DEEP REVIEW - 2026-05-10 22:55 WIB" (730 baris baru)
+- Diupdate: D:\CLAUDE CODE\Config\memory\feedback_multi_skill.md - upgrade dari "boleh" jadi "WAJIB", tambah riwayat correction insiden QA + tabel skill mapping per task type
+- Diupdate: D:\CLAUDE CODE\Config\memory\MEMORY.md - entry feedback_multi_skill diperbarui jadi "WAJIB pakai skill (mandatory)"
+- Diupdate: D:\CLAUDE CODE\Config\SESSION_LOG.md - entry baru sesi ini
+
+**Pending / Next Steps:**
+- [ ] (Optional, untuk user) Implement 4 Critical fix di pos-frontend sesuai prioritas: shift accounting, payment double-submit, order ID, cart persist
+- [ ] (Self-discipline gw) Setiap task non-trivial mulai sekarang WAJIB invoke skill via Skill/Agent tool sesuai mapping di feedback_multi_skill.md
+
+**Catatan Tambahan:**
+- Insiden ini adalah correction kedua tentang skill - sebelumnya feedback_multi_skill.md sudah ada tapi cuma "boleh", sekarang upgrade jadi mandatory karena gw pernah skip
+- Project pos-frontend BEDA dari pos-furniture (yang ada di project_pos_furniture.md). Pos-frontend = KASVER POS (mock mode standalone), pos-furniture = Laravel + Next.js
+- QA_REPORT.md di pos-frontend sekarang 2662 baris dengan multi-session findings - format append-only sesuai feedback_qa_report rule

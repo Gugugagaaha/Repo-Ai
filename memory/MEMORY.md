@@ -18,9 +18,10 @@
 - [Jangan hardcode path di skill/command](feedback_no_hardcode_paths.md) — skill/command harus auto-detect path karena user punya multiple machine dengan struktur beda
 - [Setup environment PC](reference_pc_environment.md) — struktur symlink dan path config repo di PC (beda dari laptop)
 - [POS Furniture — Status Project](project_pos_furniture.md) — phase selesai, tech stack, keputusan arsitektur, pending backlog
+- [KASVER POS (pos-frontend) — Status](project_pos_kasver.md) — Vite+React standalone (beda dari pos-furniture), mock mode, 38/100 readiness, 4 critical bugs known
 - [POS Furniture — GitHub Repo](reference_pos_furniture_repo.md) — URL repo, branch main, catatan force push
 - [Session Log — backup tiap ~10 prompt](feedback_session_log.md) — tulis summary ke SESSION_LOG.md tiap ~10 prompt, milestone besar ke PROGRESS.md
 - [Investasi User — Pluang Portfolio](user_investment.md) — holdings SPY+AMAG, rencana DCA SCHD Rp500k/bulan, tujuan dividend + capital preservation
-- [Boleh pakai multi-skill sekaligus](feedback_multi_skill.md) — invoke semua skill yang relevan tanpa minta izin per skill
+- [WAJIB pakai skill (mandatory)](feedback_multi_skill.md) — WAJIB invoke skill relevan untuk setiap task non-trivial; user serius menolak task tanpa skill
 - [Skill discovery — cari skill baru jika kurang optimal](feedback_skill_discovery.md) — tanya dulu, cari dari sumber manapun, wajib aman (bukan malware), propose + command install
 - [Response ringkas](feedback_concise_response.md) — langsung ke inti, detail cuma kalau user explicit minta

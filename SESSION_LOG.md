@@ -181,3 +181,35 @@ Hook UserPromptSubmit confirmed working. Sistem auto-track session log siap dipa
 Sesi sync only — tidak ada task coding aktif. Sistem hook session log confirmed working antar restart.
 
 ---
+
+## 2026-05-10 23:16 WIB | PC | D:\CLAUDE CODE\app | Prompt 1-6
+
+### Topik yang dibahas:
+1. /history dijalankan di awal sesi - load memory, PROGRESS, SESSION_LOG (8 entry 3 hari terakhir), token baseline 6668
+2. QA mendalam project D:\3. PROJEK\pos-frontend (KASVER POS, beda dari pos-furniture):
+   - Stack: Vite + React 18 + Zustand + React Router 6 + Tailwind, 46 files, 7080 LoC pages
+   - Mock mode (VITE_USE_MOCK), MOCK_USERS/MOCK_ORDERS/dll di constants/mockData.js
+   - Append section baru ke QA_REPORT.md (1932 -> 2662 baris) - tidak hapus history lama
+   - 22 findings baru: 4 Critical, 6 High, 7 Medium, 5 Low
+   - 2 issue lama VERIFIED FIXED (MOCK_TABLES, unit conversion gram-kg)
+   - Production readiness: 70 -> 38 (turun karena ekspos POS-critical bugs)
+3. User tanya "lo pake skill ga?" - gw jawab jujur: TIDAK pakai skill apapun di QA, padahal di plan janjiin akan pakai senior-qa + adversarial-reviewer + senior-frontend
+4. Strong correction dari user: WAJIB pakai skill / cari skill baru kalau belum ada di daftar (3x penegasan)
+5. Update memory: feedback_multi_skill.md upgrade dari "boleh" -> "WAJIB (mandatory)" dengan riwayat correction
+6. User pilih opsi 3: skip redo QA, terima hasil yang ada
+
+### Top 4 Critical findings di KASVER POS:
+- NEW-C-01 ShiftPage.jsx:38 - bug akuntansi shift, formula asumsi semua revenue cash (FAIL untuk QRIS/transfer)
+- NEW-C-02 CashierPage.jsx:349,468 - double-submit payment, no isProcessing state
+- NEW-C-03 order.service.js:51-54 - generateOrderId pakai length+1, ID collision saat refresh/multi-tab
+- NEW-C-04 cartStore.js - tidak pakai persist middleware, cart hilang saat navigate/refresh
+
+### Keputusan:
+- Rule "WAJIB pakai skill" jadi MANDATORY (sebelumnya cuma "boleh") - permanent di memory
+- Setiap task non-trivial harus invoke skill yang relevan via Skill/Agent tool, bukan cuma disebut di plan
+- QA project pos-frontend hasil 22 findings diterima as-is, redo skipped
+
+### Status:
+QA project pos-frontend selesai. Memory rule mandatory-skill-usage permanent. Major behavior change di gw - WAJIB invoke skill di task selanjutnya (QA, security, fullstack, dll).
+
+---
