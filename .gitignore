@@ -11,3 +11,7 @@ skills-cache/
 
 # Local session state — ephemeral, tidak perlu di-repo
 prompt_counter.txt
+.gstack/
+
+# QA screenshot evidence (besar, temporary per testing session)
+qa_orms_screenshots/

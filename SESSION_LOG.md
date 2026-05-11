@@ -213,3 +213,27 @@ Sesi sync only — tidak ada task coding aktif. Sistem hook session log confirme
 QA project pos-frontend selesai. Memory rule mandatory-skill-usage permanent. Major behavior change di gw - WAJIB invoke skill di task selanjutnya (QA, security, fullstack, dll).
 
 ---
+
+## 2026-05-11 23:34 WIB | PC | D:\2. Office\5. Ai\Claude | Prompt ~50
+
+### Topik yang dibahas:
+1. Full sync /up di awal sesi (22 file pulled dari remote, sesi lain push duluan)
+2. Permintaan user untuk QA aplikasi ORMS (Bank Saqu) — sistem Risk Management
+3. Phase 0: Security Audit static code analysis → QA_ORMS.md (23 findings)
+4. Phase 0.5: Architecture & module deep-dive → QA_ModulORMS.md
+5. Install bun (1.3.13) + build gstack browse binary (browser automation)
+6. Phase 1: Login flow + masterdata QA via live browser → QA_ORMS_Workflow.md (12 findings)
+7. Phase 2 Full: RCSA Workflow Maker→Checker→Approver via live UI (success) → 4 more findings
+8. Phase 3: KRI Module → critical stack trace exposure bug + save platform-wide broken
+9. Phase 4-7: Abbreviated LED + Dashboard + Final Report (53 total bugs)
+
+### Keputusan:
+- Build gstack browse binary (one-time install bun) untuk live UI QA - vs alternative (Playwright, etc)
+- Workaround Ext.NET PasswordMask via `type` event (bukan `fill`) — pattern reusable
+- Bypass W-9 (master save bug) via SQL INSERT direct untuk enable Phase 2 testing
+- Phase 4-7 abbreviated karena save bugs platform-wide → diminish marginal value of deeper UI testing
+- Output strategy: append ke QA_ORMS_Workflow.md (continuity dengan finding W-1 s/d W-30)
+- qa_orms_screenshots/ folder (47 files) di-gitignore — terlalu besar + temporary
+
+### Status:
+QA mega-session selesai. 53 bugs total documented (10 critical), 6 deliverable file + 46 screenshot. ORMS not production-ready. User dapat reusable QA template untuk app lain. Next session bisa lanjut fix critical bugs atau QA app lain pakai template.

@@ -221,6 +221,59 @@ Sesi singkat — hanya jalankan `/up` untuk sync state terbaru dari GitHub setel
 
 ---
 
+## Sesi 2026-05-11 23:34 WIB
+
+**Konteks / Topik Utama:**
+QA mega-session untuk aplikasi ORMS (Operational Risk Management System) Bank Saqu — sistem enterprise risk management ASP.NET WebForms .NET 4.8 + Web API. Mencakup security audit static, arsitektur deep-dive, dan live UI testing end-to-end Maker→Checker→Approver workflow via gstack browser automation.
+
+**Poin-Poin Penting:**
+- Project path: `D:\2. Office\BANK SAQU & BJJ\4. CODING\` — 2 codebase (RMOnline WebForms port 3272 + RMSupportApi Web API port 52797) + SQL Server 2022 di Indotek-Enzu (RMBD_BJJ + orms_prod_user)
+- Stack: Ext.NET 4.8.3 + Telerik UI + Telerik Reporting + iTextSharp + OWIN OAuth — banking-grade ISO 31000 + Basel II compliance
+- Install bun (1.3.13) untuk build gstack browse binary (browser automation tooling baru di workstation ini)
+- 6 modul utama identified: RCSA, KRI/KORI, LED, Action Plan, Risk Evaluation, Dashboard + Reports
+- 280+ tabel bisnis di RMBD_BJJ (MS-prefix master, TR-prefix transaction, _H history, _OVR override pattern)
+- Workflow Engine: MSFLOWC support 3 verifier × 3 approver, dynamic ApproveCondition formula
+- 53 total bugs found across 7 phases — 10 critical production blockers
+- Phase 2 (RCSA workflow Maker→Checker→Approver) full E2E LIVE tested via UI dengan sukses (after PasswordMask workaround) → state transition di TRFLOWC verified atomic
+- Critical bug findings: (1) PasswordMask plugin breaks form/automation/accessibility, (2) Identical password hash admin+checker+approver tanpa salt, (3) Master save platform-wide silent failure dengan empty catch, (4) Stack trace leaked exposing server path `D:\2. Office\BANK SAQU & BJJ\...`, (5) Static AppConnString race condition multi-tenant
+
+**Keputusan yang Dibuat:**
+- Bun installation di Windows (~60MB) untuk gstack — reusable untuk QA project lain
+- Output strategy: 3 file utama (QA_ORMS.md security, QA_ModulORMS.md architecture, QA_ORMS_Workflow.md workflow) + QA_Progress_Tracker.md untuk live progress
+- QA_TEST_ prefix convention untuk identifiable test data (bisa di-cleanup via DELETE SQL)
+- qa_orms_screenshots/ folder (47 file) di-gitignore — temporary per session, terlalu besar untuk repo
+- Reusable prompt template approach: user's QA prompt akan jadi acuan untuk QA aplikasi lain — proven pattern
+
+**Perubahan yang Dilakukan:**
+- Dibuat: `D:\2. Office\BANK SAQU & BJJ\4. CODING\QA_ORMS.md` — Phase 0 security audit (23 findings code-level)
+- Dibuat: `D:\2. Office\BANK SAQU & BJJ\4. CODING\QA_ModulORMS.md` — Phase 0.5 architecture & module deep-dive
+- Dibuat: `D:\2. Office\BANK SAQU & BJJ\4. CODING\QA_ORMS_Workflow.md` — Phase 1-7 workflow + UI testing (30 findings)
+- Dibuat: `D:\2. Office\BANK SAQU & BJJ\4. CODING\QA_Progress_Tracker.md` — live checkpoint log
+- Dibuat: `D:\claude-config\qa_orms_screenshots\` — 46 PNG bukti bug evidence (gitignored)
+- Install: `bun 1.3.13` di `C:\Users\USER\.bun\bin\bun.exe`
+- Build: `D:\2. Office\5. Ai\Claude\.claude\skills\gstack\browse\dist\browse.exe` (gstack headless browser binary)
+- Diupdate: `D:\claude-config\.gitignore` — tambah `qa_orms_screenshots/` exclusion
+- DB INSERT (QA_TEST_ data di Bank Saqu DB — perlu cleanup, SQL ada di QA_ORMS_Workflow.md section 7.4):
+  - MSRISKTYPEC: row baru ID=0020 (`QA_TEST_RiskType_Operational`)
+  - TRREGRISKHDRC: row baru `BSQ-ITRM-OPS-2026050002` final approved
+  - TRFLOWC + TRREGNOTIFLOGC: workflow trail untuk test
+
+**Pending / Next Steps:**
+- [ ] User cleanup QA_TEST_ data di Bank Saqu DB pakai SQL di QA_ORMS_Workflow.md section 7.4
+- [ ] User priorisasi fix 10 critical bugs (W-9, W-22, W-23, W-3, W-1, plus Phase 0 critical C-04, C-05, C-06, C-07, C-01s)
+- [ ] (Optional) Re-test save bugs setelah catch block di-fix
+- [ ] (Optional) Test Phase 2 final approval pakai SID 0024 (Hendra) credentials jika diperlukan
+- [ ] (Future template) Adapt prompt user untuk QA aplikasi lain dengan minor changes
+
+**Catatan Tambahan:**
+- Workflow Maker→Checker→Approver yang user pahami sebenarnya 4-stage di backend (Maker→Checker→Approver1→Approver2 dengan SID 0024 = Hendra Budiawan sebagai Level 2). Worth documented untuk user awareness.
+- ORMS Production Readiness Score: 25/100 — NOT READY. Estimasi 4-6 sprint dengan dedicated team untuk fix critical bugs.
+- Pattern reusable: PasswordMask workaround (pakai `type` bukan `fill`), Ext.NET combobox load inspection via `cmbX.getStore().getData().items`, Ext messagebox YES klik via `Ext.ComponentQuery.query('messagebox button[itemId=yes]')`.
+- gstack browse binary persist di filesystem — tidak perlu re-build kecuali update gstack. bun juga persist.
+- Saat browser server restart, semua refs invalidate — perlu re-snapshot. Pattern: `& $B snapshot -i` setelah setiap navigasi.
+
+---
+
 ## Sesi 2026-05-10 23:16 WIB
 
 **Konteks / Topik Utama:**

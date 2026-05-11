@@ -25,3 +25,6 @@
 - [WAJIB pakai skill (mandatory)](feedback_multi_skill.md) — WAJIB invoke skill relevan untuk setiap task non-trivial; user serius menolak task tanpa skill
 - [Skill discovery — cari skill baru jika kurang optimal](feedback_skill_discovery.md) — tanya dulu, cari dari sumber manapun, wajib aman (bukan malware), propose + command install
 - [Response ringkas](feedback_concise_response.md) — langsung ke inti, detail cuma kalau user explicit minta
+- [ORMS Bank Saqu — Status Project](project_orms_banksaqu.md) — 53 bugs ditemukan, 10 critical, NOT production-ready, butuh fix sebelum deploy
+- [ORMS QA Reports — Lokasi File](reference_orms_qa_reports.md) — 4 file MD + 46 screenshot di Bank Saqu folder, ada cleanup SQL untuk QA_TEST data
+- [Ext.NET Form Automation Pattern](reference_ext_net_automation.md) — gotchas PasswordMask, MessageBox YES, combobox, iframe untuk QA app Ext.NET; gstack browse binary sudah di-build di PC ini
