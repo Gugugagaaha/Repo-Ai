@@ -310,3 +310,52 @@ QA mendalam project pos-frontend (KASVER POS) yang menghasilkan 22 findings baru
 - Insiden ini adalah correction kedua tentang skill - sebelumnya feedback_multi_skill.md sudah ada tapi cuma "boleh", sekarang upgrade jadi mandatory karena gw pernah skip
 - Project pos-frontend BEDA dari pos-furniture (yang ada di project_pos_furniture.md). Pos-frontend = KASVER POS (mock mode standalone), pos-furniture = Laravel + Next.js
 - QA_REPORT.md di pos-frontend sekarang 2662 baris dengan multi-session findings - format append-only sesuai feedback_qa_report rule
+
+---
+
+## Sesi [2026-05-16 11:50 WIB]
+
+**Konteks / Topik Utama:**
+Security incident response — user kena Discord phishing → download installer `Archive_file_667994` (disguised sebagai Ren'Py visual novel) → infostealer malware (Lumma/RedLine variant) execute jam 01:15 AM, exfiltrate browser cookies/tokens/passwords ke C2 server, pasang persistence via scheduled task + embedded Python runtime di IE History folder. Cleanup berhasil di PC, tapi data exfiltrated irreversible. User memutuskan reinstall Windows fresh.
+
+**Poin-Poin Penting:**
+- Vector serangan: Discord DM scam dari akun temen yang ke-takeover sebelumnya ("Enzu"), promo fake crypto casino bonus, social proof palsu (fake withdrawal screenshots)
+- Malware mechanic: cover Ren'Py engine + payload di compiled `script.rpyc` (init at script.rpyc:202 took 9.07s = abnormal, log line `<Response [200]>` = HTTP exfil sukses)
+- Persistence ditemukan: scheduled task `Falcon Nigeria 5167-4120-500` (nama task pakai bagian SID user) + folder embedded Python di `C:\Users\Administrator\AppData\Local\History\History.IE5\ccef8ae03a1097c581ceff8a42fc30c2\` (36 files, 21.5MB: pythonw.exe, python313.dll, gamelan.py 51KB, rent.dat 1.4MB, sqlite3.dll, libcrypto-3.dll, libssl-3.dll)
+- Defender confirm: Threat ID 2147963675 = `Behavior:Win32/SuspEtherRpcConn.B` SeverityID 5 (SEVERE), DidThreatExecute=True
+- Defender detect awal 01:19 AM hanya block process, tidak hapus persistence — itu kenapa scheduled task tetap re-run sampai 10:23 AM
+- Original dropper `Archive_file_667994` SELF-DELETED setelah pasang persistence (classic infostealer behavior)
+- Cleanup methodology yang efektif: Discovery (read-only paralel) → Disable task (reversible, stop bleeding) → Save evidence ke `D:\malware_evidence_2026-05-16\` → Delete persistence + unregister task → Defender Quick Scan verify (ComputerState=0 clean)
+- Pre-reinstall guidance: backup ke external drive (skip .exe/.lnk/AppData/Downloads), check BitLocker recovery key, migrate 2FA app, assume SSH keys/git creds/crypto seeds compromised, bootable USB clean dari microsoft.com, rekomendasi ganti dari built-in Administrator ke akun user baru
+
+**Keputusan yang Dibuat:**
+- Cleanup approach: discovery-first → reversible action → evidence preservation → destructive action → verify. Pattern reusable untuk incident response berikutnya.
+- Tidak invoke skill incident-response/senior-secops karena user request langsung pengen shell commands, bukan IR analysis formal. Manual response cukup untuk scope ini.
+- User reinstall Windows pakai "Remove everything → Cloud download" atau bootable USB clean (hindari recovery partition yang bisa tampered)
+- Evidence folder `D:\malware_evidence_2026-05-16\` di-keep (gamelan.py + rent.dat + scheduled_task_definition.xml)
+
+**Perubahan yang Dilakukan:**
+- Deleted: `C:\Users\Administrator\AppData\Local\History\History.IE5\ccef8ae03a1097c581ceff8a42fc30c2\` (persistence folder, 36 files, 21.5MB)
+- Unregistered: scheduled task `Falcon Nigeria 5167-4120-500`
+- Created: `D:\malware_evidence_2026-05-16\` dengan gamelan.py (51KB), rent.dat (1.4MB), scheduled_task_definition.xml
+- Updated: Defender signature ke version 1.449.640.0, Quick Scan completed clean
+- Updated: `D:\CLAUDE CODE\Config\SESSION_LOG.md` — entry sesi ini (Prompt 1-10 + 11-15)
+
+**Pending / Next Steps:**
+- [ ] (User WAJIB dari HP clean SEKARANG, jangan tunggu reinstall) Kill all sessions: email utama dulu → Discord → bank/e-wallet → game launcher (Steam/Epic/EA/Ubisoft/Riot) → marketplace → social
+- [ ] (User) Backup file penting ke external drive (skip executable + AppData), check BitLocker recovery key
+- [ ] (User) Migrate 2FA authenticator app ke HP kalau ada di PC
+- [ ] (User) Reinstall Windows fresh — pilih bootable USB dari microsoft.com atau Reset PC "Cloud download"
+- [ ] (User) Post-install: bikin akun user baru (jangan pakai built-in Administrator), enable 2FA semua akun lagi, pertimbangkan password manager (Bitwarden)
+- [ ] (User) Revoke SSH keys di GitHub/GitLab, regenerate API tokens, pindahin crypto wallet ke seed baru (kalau ada)
+- [ ] (User) Notify temen "Enzu" akunnya kena hack, warning semua orang yang lo DM jam 07:00+ tgl 16 Mei bahwa itu scam
+
+**Catatan Tambahan:**
+- Data yang ter-exfil sebelum cleanup (01:15-11:32) sudah di tangan attacker → irreversible. Cleanup di PC bukan rollback data leak, hanya stop ongoing exfil.
+- Password reset + 2FA yang user lakukan SEBELUM kontak gw TIDAK cukup karena cookies/session token sudah dicuri — attacker bypass auth dengan import cookies langsung
+- Indicator of Compromise (IOC) yang berguna untuk future reference:
+  - File path pattern: `AppData\Local\History\History.IE5\<random-hex>\pythonw.exe`
+  - Scheduled task naming pattern: `<random-word> <country> <SID-suffix>` (Falcon Nigeria, dll)
+  - Behavior signature: Defender Behavior:Win32/SuspEtherRpcConn.B
+  - Log signature: Ren'Py init time anomaly (script.rpyc init > 5s) + `<Response [200]>` di log
+- Memory baru yang patut dipertimbangkan: lesson learned — kalau user kontak dengan "kena phishing/malware", jangan langsung percaya bahwa password reset + 2FA cukup. Selalu cek apakah ada download executable, dan kalau ada → asumsikan infostealer sampai terbukti tidak.

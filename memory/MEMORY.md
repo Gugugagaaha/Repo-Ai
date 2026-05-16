@@ -28,3 +28,4 @@
 - [ORMS Bank Saqu — Status Project](project_orms_banksaqu.md) — 53 bugs ditemukan, 10 critical, NOT production-ready, butuh fix sebelum deploy
 - [ORMS QA Reports — Lokasi File](reference_orms_qa_reports.md) — 4 file MD + 46 screenshot di Bank Saqu folder, ada cleanup SQL untuk QA_TEST data
 - [Ext.NET Form Automation Pattern](reference_ext_net_automation.md) — gotchas PasswordMask, MessageBox YES, combobox, iframe untuk QA app Ext.NET; gstack browse binary sudah di-build di PC ini
+- [Incident Response — jangan trust claim recovery superficial](feedback_incident_response.md) — kalau user kontak soal phishing/compromise, probe download executable dulu; password reset + 2FA TIDAK kill cookies/token yang dicuri
