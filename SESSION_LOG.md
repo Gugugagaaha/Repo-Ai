@@ -3,6 +3,24 @@ Auto-updated setiap ~10 prompt dalam session. Format: section baru per batch 10 
 
 ---
 
+## 2026-07-16 13:46 WIB | PC | D:\2. Office\5. Ai\Claude | Prompt 1–5
+
+### Topik yang dibahas:
+1. User paste template CLAUDE.md + struktur `.ai/` folder workflow
+2. Review workflow: 3 pitfalls utama (current.md kosong, overlap PROGRESS.md, overhead project pendek)
+3. User minta pitfalls disimpan ke memory dan workflow `.ai/` distandardize ke semua project ke depan
+4. Memory file baru dibuat: `feedback_ai_workflow.md`
+
+### Keputusan:
+- Workflow `.ai/` folder akan dipakai di semua project baru ke depannya
+- `current.md` jadi single source of truth kalau project pakai `.ai/` (bukan PROGRESS.md)
+- Tidak pakai `.ai/` untuk project pendek/throwaway
+
+### Status:
+Sesi diskusi & setup preferensi. Tidak ada task coding aktif.
+
+---
+
 ## 2026-05-09 | PC | D:\CLAUDE CODE\app | Prompt 1–8
 
 ### Topik yang dibahas:
