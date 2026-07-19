@@ -44,6 +44,18 @@ if ($ProjectPath) {
     }
 }
 
+# New-Item -ItemType SymbolicLink requires elevation under Windows PowerShell 5.1
+# even with Developer Mode on (it doesn't pass the unprivileged-create flag).
+# cmd.exe's mklink does honor Developer Mode, so use that instead.
+function New-Symlink {
+    param([string]$Link, [string]$Target, [switch]$Directory)
+    if ($Directory) {
+        cmd /c mklink /D "$Link" "$Target" | Out-Null
+    } else {
+        cmd /c mklink "$Link" "$Target" | Out-Null
+    }
+}
+
 Write-Host "=== Claude Code Config Setup ===" -ForegroundColor Cyan
 Write-Host "Repo   : $RepoPath"
 Write-Host "Claude : $claudeConfig"
@@ -53,13 +65,13 @@ Write-Host ""
 # 1. CLAUDE.md
 $claudeMdTarget = "$claudeConfig\CLAUDE.md"
 if (Test-Path $claudeMdTarget) { Remove-Item $claudeMdTarget -Force }
-New-Item -ItemType SymbolicLink -Path $claudeMdTarget -Target "$RepoPath\CLAUDE.md" | Out-Null
+New-Symlink -Link $claudeMdTarget -Target "$RepoPath\CLAUDE.md"
 Write-Host "[OK] CLAUDE.md symlink" -ForegroundColor Green
 
 # 2. commands/ folder
 $commandsTarget = "$claudeConfig\commands"
 if (Test-Path $commandsTarget) { Remove-Item $commandsTarget -Recurse -Force }
-New-Item -ItemType SymbolicLink -Path $commandsTarget -Target "$RepoPath\commands" | Out-Null
+New-Symlink -Link $commandsTarget -Target "$RepoPath\commands" -Directory
 Write-Host "[OK] commands/ symlink" -ForegroundColor Green
 
 # 3. memory/ folder (project-specific)
@@ -69,7 +81,7 @@ if (-not (Test-Path $memoryDir)) { New-Item -ItemType Directory -Path $memoryDir
 
 $memoryTarget = "$memoryDir\memory"
 if (Test-Path $memoryTarget) { Remove-Item $memoryTarget -Recurse -Force }
-New-Item -ItemType SymbolicLink -Path $memoryTarget -Target "$RepoPath\memory" | Out-Null
+New-Symlink -Link $memoryTarget -Target "$RepoPath\memory" -Directory
 Write-Host "[OK] memory/ symlink -> $memoryTarget" -ForegroundColor Green
 
 # 4. Custom skills symlinks
@@ -80,7 +92,7 @@ if (Test-Path $customSkillsPath) {
     Get-ChildItem $customSkillsPath -Directory | ForEach-Object {
         $target = "$skillsDir\$($_.Name)"
         if (Test-Path $target) { Remove-Item $target -Recurse -Force }
-        New-Item -ItemType SymbolicLink -Path $target -Target $_.FullName | Out-Null
+        New-Symlink -Link $target -Target $_.FullName -Directory
         Write-Host "[OK] custom skill symlink: $($_.Name)" -ForegroundColor Green
     }
 }
