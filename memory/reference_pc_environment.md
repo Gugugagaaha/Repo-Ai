@@ -45,3 +45,18 @@ $configRepo = $candidates | Where-Object { $_ -and (Test-Path "$_\.git") } | Sel
 ```
 
 **Lesson learned:** tiap kali ganti device/reinstall/pindah drive, entry "status per tanggal X" di memory ini jadi basi cepat. Entry lama TIDAK dihapus (audit trail), tapi selalu tandai entry mana yang superseded dan cek ulang sebelum dipakai sebagai asumsi.
+
+---
+
+**Gotcha PATH di PC ini (ditemukan 2026-07-20, sudah di-fix, dicatat untuk referensi debugging):**
+
+`npm run dev` sempat gagal total tanpa error message (proses exit instan, prompt langsung balik) karena 2 masalah bertumpuk:
+1. File kosong (0 byte) `C:\WINDOWS\system32\npm` (tanpa extension) — kebuat gak sengaja pas setup environment awal (19 Juli), shadow `npm.cmd` asli di `C:\Program Files\nodejs\` karena System32 lebih dulu di PATH. Sudah dihapus.
+2. PowerShell Execution Policy `Restricted` (default Windows) blokir `npm.ps1` — fix: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` (gak butuh admin).
+
+**Teknik debug yang kepake (reusable buat kasus serupa "command CLI silently fail/gak ada output" di Windows):**
+```powershell
+Get-Command <nama-command> -All | Format-List Name, CommandType, Source   # cek SEMUA match di PATH, urutan prioritas
+($env:PATH -split ';') | Select-String -Pattern "<keyword>"                # cek urutan PATH
+Get-ExecutionPolicy -List                                                   # cek semua scope policy
+```

@@ -16,9 +16,9 @@
 - [Git vs gh CLI](feedback_git_credentials.md) — cek git credentials dulu via git ls-remote, pakai git langsung kalau bisa, gh hanya fallback
 - [Konfirmasi file target](feedback_confirm_target_file.md) — pastikan file yang diedit adalah file yang dimaksud user, bukan file lain yang konteksnya mirip
 - [Jangan hardcode path di skill/command](feedback_no_hardcode_paths.md) — skill/command harus auto-detect path karena user punya multiple machine dengan struktur beda
-- [Setup environment PC](reference_pc_environment.md) — struktur symlink dan path config repo di PC (beda dari laptop)
+- [Setup environment PC](reference_pc_environment.md) — struktur symlink dan path config repo di PC (beda dari laptop), + gotcha PATH/ExecutionPolicy debugging
 - [POS Furniture — Status Project](project_pos_furniture.md) — phase selesai, tech stack, keputusan arsitektur, pending backlog
-- [KASVER POS (pos-frontend) — Status](project_pos_kasver.md) — Vite+React standalone (beda dari pos-furniture), mock mode, 38/100 readiness, 4 critical bugs known
+- [KASVER POS — Status Project](project_pos_kasver.md) — SEDANG REWRITE dari React ke ASP.NET MVC+Razor+Bootstrap; React lama deprecated tapi tetap ada, cek status sebelum kerja
 - [POS Furniture — GitHub Repo](reference_pos_furniture_repo.md) — URL repo, branch main, catatan force push
 - [Session Log — backup tiap ~10 prompt](feedback_session_log.md) — tulis summary ke SESSION_LOG.md tiap ~10 prompt, milestone besar ke PROGRESS.md
 - [Investasi User — Pluang Portfolio](user_investment.md) — holdings SPY+AMAG, rencana DCA SCHD Rp500k/bulan, tujuan dividend + capital preservation
@@ -29,5 +29,5 @@
 - [ORMS QA Reports — Lokasi File](reference_orms_qa_reports.md) — 4 file MD + 46 screenshot di Bank Saqu folder, ada cleanup SQL untuk QA_TEST data
 - [Ext.NET Form Automation Pattern](reference_ext_net_automation.md) — gotchas PasswordMask, MessageBox YES, combobox, iframe untuk QA app Ext.NET; gstack browse binary sudah di-build di PC ini
 - [Incident Response — jangan trust claim recovery superficial](feedback_incident_response.md) — kalau user kontak soal phishing/compromise, probe download executable dulu; password reset + 2FA TIDAK kill cookies/token yang dicuri
-- [Tanya dulu sebelum setup path/symlink](feedback_ask_before_setup.md) — jangan langsung execute clone/symlink/migrate; tanya user dulu pilihan path sebelum proceed
+- [Tanya dulu sebelum eksekusi setup/install](feedback_ask_before_setup.md) — jangan langsung execute clone/symlink/migrate/install tooling/scaffold project; list dulu, tanya izin eksplisit per tahap
 - [.ai/ Workflow — Catatan Penting](feedback_ai_workflow.md) — pakai struktur .ai/ untuk semua project baru; current.md wajib diisi tiap sesi; jangan untuk project pendek/throwaway

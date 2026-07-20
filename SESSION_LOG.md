@@ -359,3 +359,49 @@ Security incident RESOLVED di PC level. PC clean per Defender. Tapi data yang te
 
 ### Status:
 Setup config Claude Code selesai & berfungsi di PC ini (pasca-reinstall Windows). Bug path portability di hook + 3 command sudah di-fix dan ke-test. Sedang proses `/up` (commit & push ke GitHub).
+
+---
+
+## 2026-07-20 20:20 WIB | PC | D:\Project\Kasver\pos-frontend-1 | Prompt 6-10
+
+### Topik yang dibahas:
+1. User minta cek kenapa `npm run dev` gak jalan di project KASVER (`D:\Project\Kasver\pos-frontend-1` — lokasi baru, beda dari memory lama `D:\3. PROJEK\pos-frontend\`)
+2. Root cause #1: `node_modules` gak ada (belum pernah `npm install` di lokasi baru) → di-fix, `npm install` sukses (381 packages), tes manual `npm run dev` berhasil jalan (Vite v5.4.21, port 3000)
+3. User coba sendiri, screenshot nunjukin Chrome browser nyoba buka `C:/WINDOWS/system32/npm` sebagai file — ternyata user ngetik command di address bar browser, bukan terminal
+4. User coba lagi via VS Code terminal (PowerShell) — prompt balik instan tanpa output sama sekali (proses exit duluan, bukan hang kayak seharusnya)
+5. Investigasi: ketemu file kosong (0 byte) bernama `npm` (no extension) di `C:\WINDOWS\system32\npm`, dibuat 19 Juli 2026 21:13 (pas setup environment awal) — file ini shadow `npm.cmd` asli di `C:\Program Files\nodejs\` karena System32 lebih dulu di PATH. Dikonfirmasi bukan terkait insiden malware sebelumnya (0 byte, no code)
+6. User coba hapus via Admin CMD pakai `Remove-Item` (PowerShell cmdlet, gak jalan di cmd.exe) → gagal. User run `del` command CMD, hasilnya "Could Not Find" — file ternyata udah kehapus sebelumnya
+7. Verifikasi: file udah gak ada di System32/SysWOW64/Sysnative — masalah shadow-file resolved
+8. Muncul error baru: `npm.ps1 cannot be loaded because running scripts is disabled` — PowerShell Execution Policy default `Restricted` block npm.ps1. Fix: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` (berhasil diset, gak butuh admin)
+9. User nanya pendapat soal convert project KASVER dari Vite+React+Tailwind+Zustand ke **MVC + Razor + Bootstrap** (ASP.NET). Saya kasih clarifying question (Laravel vs Razor vs restrukturisasi React) + warning kritis: project ini MOCK MODE (gak ada backend real), 38/100 readiness, 4 critical bug belum fix, dan Razor MVC klasik (server-rendered) berpotensi konflik sama rule POS Priority (fast interaction, no page-reload feel)
+10. User jawab: pasti MVC+Razor+Bootstrap (requirement, bukan preferensi teknis semata), API sudah ada & akan dikasih menyusul, bug di-defer — rewrite dulu ke MVC Razor
+
+### Keputusan:
+- KASVER pos-frontend akan di-**rewrite total** dari Vite+React+Tailwind+Zustand ke **ASP.NET MVC + Razor Views + Bootstrap**
+- Backend API sudah ada di sisi user (bukan bikin dari nol) — akan diberikan menyusul, tim kerja tinggal menyesuaikan consume ke API tsb
+- 4 known critical bug (double-submit payment, cart loss, order ID collision, formula shift salah) **di-defer**, bukan diperbaiki dulu — fokus rewrite dulu
+- Belum mulai implementasi apapun — nunggu API spec dari user sebelum eksekusi rewrite
+
+### Status:
+Task besar baru dimulai: rewrite arsitektur KASVER POS ke MVC+Razor+Bootstrap. Blocking item: user belum kasih API spec/detail. Belum ada kode yang diubah untuk rewrite ini.
+
+---
+
+## 2026-07-20 20:45 WIB | PC | D:\Project\KASVER MVC | Prompt 11-19
+
+### Topik yang dibahas:
+1. User tanya pendapat soal convert KASVER POS ke MVC + Razor + Bootstrap (lanjutan dari sesi sebelumnya) — dijawab dengan clarifying question + list konkret prasyarat & rencana tahap tanpa eksekusi langsung
+2. User minta cuma di-list dulu apa yang dibutuhkan, jangan eksekusi — instruksi: "untuk pelaksanaan nanti lo tanya gw aja apakah udah mau dilaksanain atau engga"
+3. Cek `.NET SDK` — belum terinstall di mesin ini. Cek versi tersedia via winget: `.NET SDK 10.0` (stable/LTS terbaru)
+4. User konfirmasi lokasi project baru: `D:\Project\KASVER MVC` (folder terpisah dari React lama)
+5. User minta dibuatkan file **PRD** dan **RESUME** — awalnya dibuat sebagai dokumen rencana migrasi, lalu user koreksi: PRD yang dimaksud adalah requirement **aplikasi KASVER POS itu sendiri** (produk), bukan rencana migrasi
+6. Investigasi mendalam source code React lama (`routes.js`, `mockData.js`, handler function di 14 halaman) untuk menyusun PRD aplikasi yang akurat berbasis kode nyata, bukan asumsi
+7. `PRD.md` ditulis ulang: overview produk, 5 role + permission matrix lengkap, detail 10 modul/halaman, 16 entitas data, 9 business rules, known issues
+8. `RESUME.md` tetap sebagai dokumen risiko migrasi teknis (dibuat di prompt sebelumnya, masih relevan — cross-reference dari PRD)
+
+### Keputusan:
+- PRD.md = requirement aplikasi (produk), RESUME.md = risiko & pertimbangan migrasi teknis — dua dokumen terpisah dengan tujuan beda, keduanya di `D:\Project\KASVER MVC\`
+- Belum ada eksekusi instalasi/scaffolding apapun — user eksplisit minta ditanya dulu sebelum tahap pelaksanaan apapun dimulai (install .NET SDK, scaffold project, dll)
+
+### Status:
+Task rewrite KASVER ke MVC+Razor+Bootstrap masih di tahap dokumentasi/planning (PRD + RESUME selesai). Belum mulai instalasi tooling maupun coding. Masih menunggu: (1) izin eksplisit user untuk mulai eksekusi tahap 1 (install .NET SDK), (2) API spec dari user untuk wiring data layer.

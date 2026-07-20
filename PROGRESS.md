@@ -390,3 +390,36 @@ Sesi pertama di PC ini setelah Windows reinstall total (post-incident infosteale
 
 **Catatan Tambahan:**
 Tidak ada.
+
+---
+
+## Sesi [2026-07-20 20:45 WIB]
+
+**Konteks / Topik Utama:**
+KASVER POS (project pos-frontend, React) diputuskan untuk **rewrite total** ke ASP.NET MVC + Razor Views + Bootstrap. Sesi ini mencakup debugging environment (npm run dev gagal karena beberapa isu berbeda), lalu diskusi arsitektur dan penyusunan dokumen requirement untuk rewrite.
+
+**Poin-Poin Penting:**
+- Lokasi project React lama pindah: sekarang `D:\Project\Kasver\pos-frontend-1` (bukan `D:\3. PROJEK\pos-frontend\` seperti di memory lama)
+- Debugging `npm run dev` di project lama: (1) `node_modules` belum ada → `npm install` fix, (2) file kosong `npm` nyasar di `C:\WINDOWS\system32\npm` shadow npm asli (root cause utama, bukan malware — dibuat 19 Juli pas setup env, sudah dihapus), (3) PowerShell Execution Policy `Restricted` blokir `npm.ps1` → diset `RemoteSigned` scope CurrentUser
+- Keputusan rewrite: ASP.NET MVC + Razor + Bootstrap (requirement, bukan preferensi). Backend API sudah ada di sisi user, spec menyusul. 4 bug lama (double-submit, cart loss, order ID collision, formula shift salah) di-defer, fokus rewrite dulu
+- `.NET SDK` belum terinstall di PC ini — versi tersedia terbaru: `.NET SDK 10.0` (stable/LTS)
+- Lokasi project baru: `D:\Project\KASVER MVC`
+- Dibuat `PRD.md` (requirement aplikasi KASVER POS — 5 role + permission matrix, 10 modul, 16 entitas data, 9 business rules, berdasarkan investigasi source code React lama) dan `RESUME.md` (risiko teknis migrasi ke Razor MVC: full rewrite bukan port, risiko UX server-rendered vs kebutuhan fast-interaction POS, status bug lama di paradigma baru)
+
+**Keputusan yang Dibuat:**
+- Stack baru KASVER: ASP.NET MVC + Razor + Bootstrap, project terpisah di `D:\Project\KASVER MVC` (React lama tetap ada sebagai referensi, tidak dihapus)
+- Instalasi tooling & scaffolding **belum dieksekusi** — user eksplisit minta ditanya dulu sebelum tiap tahap pelaksanaan dimulai
+- Bug lama di-defer, tidak diperbaiki dulu sebelum rewrite
+
+**Perubahan yang Dilakukan:**
+- Fix environment project lama: `npm install`, hapus file shadow `C:\WINDOWS\system32\npm`, set PowerShell ExecutionPolicy RemoteSigned (CurrentUser)
+- Dibuat baru: `D:\Project\KASVER MVC\PRD.md`, `D:\Project\KASVER MVC\RESUME.md`
+
+**Pending / Next Steps:**
+- [ ] User kasih izin eksplisit untuk mulai eksekusi (install .NET SDK 10.0, scaffold `dotnet new mvc`)
+- [ ] User kasih API spec (endpoint, schema, auth mechanism) — blocker untuk wiring data layer
+- [ ] Konfirmasi final scope 14 halaman (sama persis atau ada penyesuaian)
+- [ ] Update `memory/project_pos_kasver.md` — masih mencatat status lama (React, lokasi lama), perlu direfresh setelah rewrite ini progress
+
+**Catatan Tambahan:**
+Tidak ada.
