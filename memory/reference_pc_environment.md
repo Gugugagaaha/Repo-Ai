@@ -7,33 +7,41 @@ metadata:
   originSessionId: fd5daec4-f61b-4b01-9da5-8691f529321c
 ---
 
-**PC environment (bukan laptop) — Status per 2026-05-16 (post-setup ulang):**
+**PC environment (bukan laptop) — Status per 2026-07-20 (post Windows reinstall, superseded entry di bawah):**
 
-- `C:\Users\Administrator\.claude` → SymbolicLink ke `E:\Claude`
-- Config git repo: `E:\Claude\Config` (clone dari https://github.com/Gugugagaaha/Repo-Ai, branch master)
-- Symlinks aktif:
-  - `~/.claude/CLAUDE.md` → `E:\Claude\Config\CLAUDE.md`
-  - `~/.claude/commands` → `E:\Claude\Config\commands`
-  - `~/.claude/memory` → `E:\Claude\Config\memory` (via projects/C--Users-Administrator--local-bin)
-- Hook UserPromptSubmit: `E:\Claude\Config\hooks\prompt_counter.ps1`
-- tiktoken installed, token_counter.py di `E:\Claude\Config\token_counter.py` — functional
-- Python: 3.14.5, Git: 2.54.0, Claude: binary di `.local\bin` (tidak di PATH default)
+- Windows di-reinstall total setelah incident infostealer 2026-05-16 (lihat SESSION_LOG 2026-05-16). Username lama `Administrator` sudah tidak dipakai lagi — user sekarang pakai akun `Enzu` (sesuai rekomendasi pre-reinstall: jangan pakai built-in Administrator).
+- `C:\Users\Enzu\.claude` — folder **biasa** (bukan symlink), tapi isinya per-item symlink:
+  - `~/.claude/CLAUDE.md` → `D:\Claude\Config\CLAUDE.md`
+  - `~/.claude/commands` → `D:\Claude\Config\commands`
+  - `~/.claude/projects\C--Users-Enzu--local-bin\memory` → `D:\Claude\Config\memory`
+  - `~/.claude/skills\notion-design` → `D:\Claude\Config\custom-skills\notion-design`
+- Config git repo: `D:\Claude\Config` (clone dari https://github.com/Gugugagaaha/Repo-Ai, branch master) — bukan `E:\Claude\Config` lagi, drive `E:` sudah tidak dipakai di setup baru ini.
+- Hook UserPromptSubmit: `D:\Claude\Config\hooks\prompt_counter.ps1`, terdaftar di `~/.claude/settings.json` (file biasa, bukan symlink — di-generate/merge oleh `setup.ps1`).
+- Project path encoding: `C--Users-Enzu--local-bin` (cwd kerja utama: `C:\Users\Enzu\.local\bin`).
+- Saat setup ulang di sesi ini (2026-07-20), `setup.ps1` sempat belum pernah dijalankan di device baru ini — `CLAUDE.md`/`commands`/`memory`/`settings.json` semua kosong sampai dijalankan manual. Ketemu juga bug: candidate path auto-detect di `hooks/prompt_counter.ps1` + `commands/up.md,history.md,updateskills.md` gak include path baru `D:\Claude\Config` → sudah di-fix (lihat SESSION_LOG 2026-07-20).
 
-**Drive layout:**
-- `C:\` — OS (bisa di-wipe saat reinstall, .claude cuma symlink)
-- `D:\claude-config` — backup lama, sudah tidak aktif, tidak ada .git
-- `E:\Claude` — config aktif, aman dari reinstall C:\
+**Drive layout (per 2026-07-20):**
+- `C:\` — OS (bisa di-wipe saat reinstall, `.claude` isinya cuma symlink/pointer ke D:, aman)
+- `D:\Claude\Config` — config aktif sekarang
+- `E:\Claude` — **sudah tidak ada/tidak dipakai** (entry lama di bawah basi, drive letter berubah pasca reinstall)
 
-**Laptop environment:**
+**Laptop environment (belum diverifikasi ulang sejak reinstall PC ini, kemungkinan masih valid):**
 - Config git repo: `D:\claude-config` (dengan .git aktif)
 - Struktur `.claude` kemungkinan tidak pakai symlink
 
-**Cara deteksi di script:**
+**Cara deteksi di script (updated — self-detecting, gak perlu update manual tiap ganti drive/device):**
 ```powershell
+$commandsItem = Get-Item "$env:USERPROFILE\.claude\commands" -ErrorAction SilentlyContinue
 $claudeItem = Get-Item "$env:USERPROFILE\.claude" -ErrorAction SilentlyContinue
-if ($claudeItem.LinkType -eq "SymbolicLink") {
-    $configRepo = Join-Path $claudeItem.Target "Config"  # E:\Claude\Config
-} else {
-    # fallback: cek D:\claude-config, D:\CLAUDE CODE\Config
+$candidates = @()
+if ($commandsItem.LinkType -eq "SymbolicLink") {
+    $candidates += Split-Path $commandsItem.Target -Parent   # self-detect, selalu akurat post-setup
 }
+if ($claudeItem.LinkType -eq "SymbolicLink") {
+    $candidates += Join-Path $claudeItem.Target "Config"
+}
+$candidates += "D:\Claude\Config", "D:\CLAUDE CODE\Config", "D:\claude-config", "$env:USERPROFILE\.claude\Config"
+$configRepo = $candidates | Where-Object { $_ -and (Test-Path "$_\.git") } | Select-Object -First 1
 ```
+
+**Lesson learned:** tiap kali ganti device/reinstall/pindah drive, entry "status per tanggal X" di memory ini jadi basi cepat. Entry lama TIDAK dihapus (audit trail), tapi selalu tandai entry mana yang superseded dan cek ulang sebelum dipakai sebagai asumsi.

@@ -9,13 +9,23 @@ $ErrorActionPreference = "SilentlyContinue"
 
 try {
     # Auto-detect config repo (same logic seperti /up Step 0)
-    $claudeItem = Get-Item "$env:USERPROFILE\.claude" -ErrorAction SilentlyContinue
-    $candidates = @()
-    if ($claudeItem.LinkType -eq "SymbolicLink") {
-        $candidates += Join-Path $claudeItem.Target "Config"
+    # Primary: script ini fisiknya selalu ada di dalam config repo -> parent dari $PSScriptRoot = repo root
+    $configRepo = Split-Path $PSScriptRoot -Parent
+    if (-not (Test-Path "$configRepo\.git")) { $configRepo = $null }
+
+    if (-not $configRepo) {
+        $commandsItem = Get-Item "$env:USERPROFILE\.claude\commands" -ErrorAction SilentlyContinue
+        $claudeItem = Get-Item "$env:USERPROFILE\.claude" -ErrorAction SilentlyContinue
+        $candidates = @()
+        if ($commandsItem.LinkType -eq "SymbolicLink") {
+            $candidates += Split-Path $commandsItem.Target -Parent
+        }
+        if ($claudeItem.LinkType -eq "SymbolicLink") {
+            $candidates += Join-Path $claudeItem.Target "Config"
+        }
+        $candidates += "D:\Claude\Config", "D:\CLAUDE CODE\Config", "D:\claude-config", "$env:USERPROFILE\.claude\Config"
+        $configRepo = $candidates | Where-Object { $_ -and (Test-Path "$_\.git") } | Select-Object -First 1
     }
-    $candidates += "D:\CLAUDE CODE\Config", "D:\claude-config", "$env:USERPROFILE\.claude\Config"
-    $configRepo = $candidates | Where-Object { $_ -and (Test-Path "$_\.git") } | Select-Object -First 1
 
     if (-not $configRepo) { exit 0 }
 

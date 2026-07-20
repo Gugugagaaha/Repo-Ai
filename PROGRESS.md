@@ -359,3 +359,34 @@ Security incident response — user kena Discord phishing → download installer
   - Behavior signature: Defender Behavior:Win32/SuspEtherRpcConn.B
   - Log signature: Ren'Py init time anomaly (script.rpyc init > 5s) + `<Response [200]>` di log
 - Memory baru yang patut dipertimbangkan: lesson learned — kalau user kontak dengan "kena phishing/malware", jangan langsung percaya bahwa password reset + 2FA cukup. Selalu cek apakah ada download executable, dan kalau ada → asumsikan infostealer sampai terbukti tidak.
+
+---
+
+## Sesi [2026-07-20 19:41 WIB]
+
+**Konteks / Topik Utama:**
+Sesi pertama di PC ini setelah Windows reinstall total (post-incident infostealer 2026-05-16). Config repo (`D:\Claude\Config`) sudah ke-clone tapi symlink ke `~/.claude` belum pernah dibuat — `CLAUDE.md`, `commands/`, `memory/`, `settings.json` semua kosong/hilang. User minta cek config, lalu fix full setup + bug path portability.
+
+**Poin-Poin Penting:**
+- Username Windows baru: `Enzu` (bukan `Administrator` lagi, sesuai rekomendasi pre-reinstall)
+- Config repo pindah lokasi: `D:\Claude\Config` (sebelumnya `E:\Claude\Config` — drive `E:` sudah tidak dipakai)
+- `setup.ps1` dijalankan manual → symlink `CLAUDE.md`, `commands/`, `memory/` (ke `projects/C--Users-Enzu--local-bin/memory`), custom skill `notion-design`, dan register hook `UserPromptSubmit` di `settings.json` — semua berhasil
+- Bug ditemukan: `hooks/prompt_counter.ps1` + `commands/up.md`, `history.md`, `updateskills.md` pakai candidate-list auto-detect config repo yang gak include path baru `D:\Claude\Config` (cuma ada path laptop `D:\claude-config` dan PC lama `D:\CLAUDE CODE\Config`) → semua command (`/up`, `/history`, `/updateskills`) dan hook counter bakal gagal jalan di device ini
+- Fix: tambah primary self-detection (via symlink `~/.claude/commands` untuk command files, `$PSScriptRoot` untuk hook script) sebelum fallback ke candidate list — biar gak perlu update manual lagi tiap ganti device/drive, plus `D:\Claude\Config` ditambah eksplisit ke fallback list
+- `memory/reference_pc_environment.md` diupdate (entry lama per 2026-05-16 sudah basi — username, drive letter, dan struktur symlink semua berubah)
+
+**Keputusan yang Dibuat:**
+- Prinsip fix: self-detecting (via symlink yang sudah dibuat `setup.ps1`) lebih diutamakan daripada hardcode satu path, supaya tetap portable ke laptop/device lain sesuai `feedback_no_hardcode_paths.md` — tapi tetap tambah `D:\Claude\Config` eksplisit sebagai fallback karena itu path aktif device ini sekarang
+
+**Perubahan yang Dilakukan:**
+- `hooks/prompt_counter.ps1` — logic deteksi config repo diganti jadi `$PSScriptRoot`-based + fallback candidate list yang diperluas
+- `commands/up.md`, `commands/history.md`, `commands/updateskills.md` — Step 0 detection diganti jadi self-detect via symlink `~/.claude/commands` + fallback candidate list yang diperluas (tambah `D:\Claude\Config`)
+- `memory/reference_pc_environment.md` — update status environment PC ke kondisi terkini (post-reinstall)
+- `~/.claude/settings.json` — dibuat baru (belum ada sebelumnya), hook `UserPromptSubmit` teregister
+
+**Pending / Next Steps:**
+- [ ] Verifikasi setup yang sama masih valid/konsisten di laptop (belum dicek ulang sejak reinstall PC ini)
+- [ ] Restart Claude Code disarankan supaya `CLAUDE.md` rules & hook ke-load bersih dari awal session
+
+**Catatan Tambahan:**
+Tidak ada.

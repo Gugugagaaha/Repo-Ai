@@ -12,12 +12,16 @@ Lakukan full sync sesi ini. Ikuti semua langkah berikut secara berurutan.
 **WAJIB dijalankan pertama sebelum step lain.** Jangan hardcode path apapun — deteksi dulu.
 
 ```powershell
+$commandsItem = Get-Item "$env:USERPROFILE\.claude\commands" -ErrorAction SilentlyContinue
 $claudeItem = Get-Item "$env:USERPROFILE\.claude" -ErrorAction SilentlyContinue
 $candidates = @()
+if ($commandsItem.LinkType -eq "SymbolicLink") {
+    $candidates += Split-Path $commandsItem.Target -Parent
+}
 if ($claudeItem.LinkType -eq "SymbolicLink") {
     $candidates += Join-Path $claudeItem.Target "Config"
 }
-$candidates += "D:\CLAUDE CODE\Config", "D:\claude-config", "$env:USERPROFILE\.claude\Config"
+$candidates += "D:\Claude\Config", "D:\CLAUDE CODE\Config", "D:\claude-config", "$env:USERPROFILE\.claude\Config"
 $configRepo = $candidates | Where-Object { $_ -and (Test-Path "$_\.git") } | Select-Object -First 1
 if (-not $configRepo) { Write-Error "Config repo tidak ditemukan di kandidat manapun!"; exit 1 }
 Write-Host "Config repo ditemukan: $configRepo"

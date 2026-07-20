@@ -338,3 +338,24 @@ Recovery aktif. Discovery commands akan jalan setelah ini. User belum konfirmasi
 Security incident RESOLVED di PC level. PC clean per Defender. Tapi data yang ter-exfil sebelum cleanup (cookies, tokens, saved passwords, crypto seed dari files) udah di tangan attacker — irreversible. User WAJIB lanjut Phase 2 (kill session di email/Discord/bank/social/etc dari HP clean) sebelum reinstall, JANGAN tunggu reinstall selesai. Setelah reinstall: change all passwords lagi (3rd time), revoke SSH keys di GitHub, pindahin crypto wallet ke seed baru.
 
 ---
+
+## 2026-07-20 19:41 WIB | PC | C:\Users\Enzu\.local\bin | Prompt 1-5
+
+### Topik yang dibahas:
+1. User minta cek config Claude Code ("cek config") — ditemukan project-local `.claude/settings.local.json` di cwd cuma berisi permission allowlist, gak ada global settings.json aktif
+2. User arahkan ke config repo asli: `D:\Claude\Config` — baca `CLAUDE.md`, `README.md`, ketahuan ini repo personal config (global rules, custom commands, memory, hook) yang harusnya di-symlink ke `~/.claude` tapi belum pernah di-setup di PC ini (PC baru pasca-reinstall Windows)
+3. Verifikasi: `CLAUDE.md`, `commands/`, `memory/`, `settings.json` semua hilang di `~/.claude` — hanya `skills/` folder kosong yang ada
+4. Jalankan `setup.ps1` → semua symlink berhasil dibuat + hook `UserPromptSubmit` teregister di `settings.json`
+5. User minta jelasin cara kerja mekanisme symlink + apa yang berubah sebelum/sesudah setup
+6. User minta fix bug: candidate-list auto-detect config repo path (di hook + 3 command file) gak include path baru `D:\Claude\Config`, sekaligus instruksi "path yang gw kasih dipake sebagai utama mulai sekarang"
+7. Fix diterapkan: self-detect via symlink `~/.claude/commands` (command files) / `$PSScriptRoot` (hook script) sebagai primary, `D:\Claude\Config` ditambah eksplisit ke fallback candidate list — supaya tetap portable ke device lain (laptop, PC lama) sesuai `feedback_no_hardcode_paths.md`
+8. Test manual hook — berhasil detect repo, counter naik 9→10, reminder trigger sesuai desain, reset ke 0
+9. Update `memory/reference_pc_environment.md` — entry lama (per 2026-05-16, sebelum reinstall) sudah basi, diganti dengan kondisi terkini
+10. Jalankan `/up` untuk full sync sesi ini
+
+### Keputusan:
+- Fix path detection pakai self-detecting approach (via symlink yang dibuat `setup.ps1`), bukan hardcode satu path — tetap tambah `D:\Claude\Config` eksplisit sebagai fallback untuk device ini
+- Memory environment PC di-update mencerminkan kondisi pasca-reinstall (username `Administrator` → `Enzu`, drive config `E:\` → `D:\Claude\Config`)
+
+### Status:
+Setup config Claude Code selesai & berfungsi di PC ini (pasca-reinstall Windows). Bug path portability di hook + 3 command sudah di-fix dan ke-test. Sedang proses `/up` (commit & push ke GitHub).
