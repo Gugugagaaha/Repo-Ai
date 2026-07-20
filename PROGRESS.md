@@ -423,3 +423,37 @@ KASVER POS (project pos-frontend, React) diputuskan untuk **rewrite total** ke A
 
 **Catatan Tambahan:**
 Tidak ada.
+
+---
+
+## Sesi [2026-07-21 02:45 WIB]
+
+**Konteks / Topik Utama:**
+Lanjutan rewrite KASVER POS ke MVC+Razor+Bootstrap — 4 dari 8 phase selesai dikerjakan dalam sesi ini (Phase 1 Sales/Kasir, Phase 2 Recipe, Phase 3 Tables, Phase 4 Inventory), dengan strategi FE-first yang konsisten: bangun UI + kontrak API proposal duluan, backend menyusul.
+
+**Poin-Poin Penting:**
+- Phase 1 (Sales/Kasir) selesai 100% kodenya: Cashier, Incoming Orders, Cashier Settings (Produk+Bundle), Accumulated Bill — tapi validasi live masih blocked oleh 2 bug backend
+- Ketemu & fix **Bug backend #1**: `TrShiftRepository.CheckShiftAlreadyOpen` crash karena kolom `firstname` NULL di database tapi model C# non-nullable — di-fix di source `GENESISPOS-development` (`MsUserModel` jadi nullable), build clean, TAPI belum di-deploy ke server live (`62.146.234.102`)
+- Ketemu **Bug backend #2** (belum di-fix): `GET /api/Order` crash `column t1.price does not exist` — dugaan migration drift, blocking Incoming Orders & Accumulated Bill
+- Phase 2 (Recipe), Phase 3 (Tables + drag-drop), Phase 4 (Inventory) — **dibangun DAN tervalidasi penuh langsung ke API live** (bukan cuma build sukses) — create/list/delete/restock/drag-drop semua dicoba beneran ke `62.146.234.102`, data tes di-cleanup kecuali Restock (gak ada endpoint undo, permanen nambah stok item tes +5 unit — dilaporkan transparan)
+- Ketemu banyak gap API real (didokumentasikan lengkap di `Doc/PROGRESS.md` project): Extra Items lepas, shift-order linking, Bundle (entity sama sekali gak ada), Order/Table status tanpa definisi resmi, Item Update/Supplier Create tanpa endpoint sama sekali (walau Create Item DTO-nya udah disiapkan backend tapi action method-nya lupa dibikin)
+- Metodologi verifikasi: curl manual dengan cookie jar + antiforgery token (browser extension gak konek), harus hati-hati soal timing cookie read/write biar gak dapat 400 palsu dari CSRF mismatch
+
+**Keputusan yang Dibuat:**
+- Strategi FE-first dipertahankan konsisten di semua phase — modul yang API-nya belum ada tetap dibangun UI+proposal, ditangani graceful (toast) kalau gagal, didokumentasikan jelas biar backend tau kontrak yang diharapkan
+- Bug backend tidak menghalangi progress FE — modul yang tidak terdampak tetap dikerjakan dan divalidasi penuh
+- Semua progress, gap API, dan bug tercatat di `D:\Project\KASVER Git\Doc\PROGRESS.md` (living document, bukan cuma dilaporkan ke user lalu hilang)
+
+**Perubahan yang Dilakukan:**
+- `Kasver_FE`: ~15 file baru (Controllers/Services/Models/Views) untuk Phase 1-4, beberapa file existing di-extend (`ItemApiService.cs`, `OrderApiService.cs`, dst)
+- `GENESISPOS-development`: `Models/MsUserModel.cs`, `Helpers/FormatHelper.cs` — fix Bug #1 (nullable firstname/lastname)
+- `memory/project_pos_kasver.md` (di config repo ini) perlu di-update lagi mencerminkan progress terbaru — belum dilakukan, masih pending
+
+**Pending / Next Steps:**
+- [ ] Deploy fix Bug #1 ke server live `62.146.234.102` (di luar akses Claude — perlu user)
+- [ ] Fix Bug #2 (`GET /api/Order` crash) — belum ada akses DB buat verifikasi/fix
+- [ ] Lanjut Phase 5 (Users & Roles), 6 (Settings), 7 (Reports), 8 (Shift standalone)
+- [ ] Update `memory/project_pos_kasver.md` dengan status terbaru (banyak sekali perubahan sejak entry terakhir)
+
+**Catatan Tambahan:**
+Tidak ada.

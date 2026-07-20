@@ -18,7 +18,7 @@
 - [Jangan hardcode path di skill/command](feedback_no_hardcode_paths.md) — skill/command harus auto-detect path karena user punya multiple machine dengan struktur beda
 - [Setup environment PC](reference_pc_environment.md) — struktur symlink dan path config repo di PC (beda dari laptop), + gotcha PATH/ExecutionPolicy debugging
 - [POS Furniture — Status Project](project_pos_furniture.md) — phase selesai, tech stack, keputusan arsitektur, pending backlog
-- [KASVER POS — Status Project](project_pos_kasver.md) — SEDANG REWRITE dari React ke ASP.NET MVC+Razor+Bootstrap; React lama deprecated tapi tetap ada, cek status sebelum kerja
+- [KASVER POS — Status Project](project_pos_kasver.md) — rewrite MVC 4/8 phase selesai, backend API real (GENESISPOS) sudah ada, baca Doc/PROGRESS.md project sebelum kerja
 - [POS Furniture — GitHub Repo](reference_pos_furniture_repo.md) — URL repo, branch main, catatan force push
 - [Session Log — backup tiap ~10 prompt](feedback_session_log.md) — tulis summary ke SESSION_LOG.md tiap ~10 prompt, milestone besar ke PROGRESS.md
 - [Investasi User — Pluang Portfolio](user_investment.md) — holdings SPY+AMAG, rencana DCA SCHD Rp500k/bulan, tujuan dividend + capital preservation
@@ -31,3 +31,4 @@
 - [Incident Response — jangan trust claim recovery superficial](feedback_incident_response.md) — kalau user kontak soal phishing/compromise, probe download executable dulu; password reset + 2FA TIDAK kill cookies/token yang dicuri
 - [Tanya dulu sebelum eksekusi setup/install](feedback_ask_before_setup.md) — jangan langsung execute clone/symlink/migrate/install tooling/scaffold project; list dulu, tanya izin eksplisit per tahap
 - [.ai/ Workflow — Catatan Penting](feedback_ai_workflow.md) — pakai struktur .ai/ untuk semua project baru; current.md wajib diisi tiap sesi; jangan untuk project pendek/throwaway
+- [FE dulu, BE nyusul](feedback_fe_first_incomplete_backend.md) — kalau backend belum lengkap, tetap bangun FE dengan kontrak proposal yang didokumentasikan, jangan nunggu backend siap
