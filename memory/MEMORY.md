@@ -32,3 +32,5 @@
 - [Tanya dulu sebelum eksekusi setup/install](feedback_ask_before_setup.md) — jangan langsung execute clone/symlink/migrate/install tooling/scaffold project; list dulu, tanya izin eksplisit per tahap
 - [.ai/ Workflow — Catatan Penting](feedback_ai_workflow.md) — pakai struktur .ai/ untuk semua project baru; current.md wajib diisi tiap sesi; jangan untuk project pendek/throwaway
 - [FE dulu, BE nyusul](feedback_fe_first_incomplete_backend.md) — kalau backend belum lengkap, tetap bangun FE dengan kontrak proposal yang didokumentasikan, jangan nunggu backend siap
+- [Skill Pipelines & Kombinasi Efisien](reference_skill_pipelines.md) — pipeline lengkap: pre-dev, dev loop, review, debug, security, ship, monitoring; combos underutilized; rules penggunaan
+- [ORMS BJJ (RMOnline) — Status Analisis](project_orms_bjj.md) — ASP.NET WebForms .NET 4.8, path D:\2. Office\5. Ai\RMOnline_NEW2, Phase 1-2 selesai, banyak critical security & architecture issues
