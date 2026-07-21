@@ -18,7 +18,7 @@
 - [Jangan hardcode path di skill/command](feedback_no_hardcode_paths.md) — skill/command harus auto-detect path karena user punya multiple machine dengan struktur beda
 - [Setup environment PC](reference_pc_environment.md) — struktur symlink dan path config repo di PC (beda dari laptop), + gotcha PATH/ExecutionPolicy debugging
 - [POS Furniture — Status Project](project_pos_furniture.md) — phase selesai, tech stack, keputusan arsitektur, pending backlog
-- [KASVER POS — Status Project](project_pos_kasver.md) — rewrite MVC 4/8 phase selesai, backend API real (GENESISPOS) sudah ada, baca Doc/PROGRESS.md project sebelum kerja
+- [KASVER POS — Status Project](project_pos_kasver.md) — rewrite MVC 8/8 phase selesai coding FE, pending deploy backend fix + Bug #2 GET /api/Order, baca Doc/PROGRESS.md sebelum kerja
 - [POS Furniture — GitHub Repo](reference_pos_furniture_repo.md) — URL repo, branch main, catatan force push
 - [Session Log — backup tiap ~10 prompt](feedback_session_log.md) — tulis summary ke SESSION_LOG.md tiap ~10 prompt, milestone besar ke PROGRESS.md
 - [Investasi User — Pluang Portfolio](user_investment.md) — holdings SPY+AMAG, rencana DCA SCHD Rp500k/bulan, tujuan dividend + capital preservation

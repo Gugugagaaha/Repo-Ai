@@ -3,6 +3,26 @@ Auto-updated setiap ~10 prompt dalam session. Format: section baru per batch 10 
 
 ---
 
+## 2026-07-21 15:08 WIB | PC | D:\2. Office\4. Project\Kasver Git\Kasver_FE | Prompt ~15+
+
+### Topik yang dibahas:
+1. Lanjut KASVER rewrite — Phase 5 (Users & Roles), Phase 6 (Payment Methods + Settings), Phase 8 (Shift standalone), Phase 7 (Reports) semua selesai dikerjakan
+2. Bug investigation: tutup shift dan buka shift dari halaman `/shift` tidak bisa
+3. Root cause (a) FE bug: `CloseShiftRequest` & `OpenShiftRequest` di `CashierModels.cs` pakai `[JsonPropertyName]` snake_case tapi backend `FReqCloseShiftDto`/`FReqOpenShiftDto` PascalCase → binding fail → `LastCash=0`, `CloseNote=null` dikirim ke backend
+4. Root cause (b) backend bug: `TrShiftRepository.CheckShiftAlreadyOpen` + `GetAll` crash saat `OpenBy.firstname` NULL di DB → `ReadyShift` selalu throw → shift tidak terdeteksi aktif → tombol "Tutup Shift" tidak muncul
+5. Fix FE: hapus `[JsonPropertyName]` yang salah dari `CloseShiftRequest` dan `OpenShiftRequest` — camelCase default sudah cukup karena backend `PropertyNameCaseInsensitive = true`
+6. Fix backend: tambah `?? ""` null-coalescing di `CheckShiftAlreadyOpen` dan `GetAll` di `TrShiftRepository.cs` — backend butuh .NET 10 SDK untuk build, perlu user deploy
+
+### Keputusan:
+- `N3 backend bug` (first_cash selalu 0) ternyata sebagian FE bug — `[JsonPropertyName("first_cash")]` bikin mismatch, bukan murni backend issue
+- Backend fix TrShiftRepository pakai null-coalescing `?? ""` (minimal invasive, tidak ubah model)
+- Backend perlu deploy ulang ke `62.146.234.102` oleh user sebelum shift flow bisa ditest end-to-end
+
+### Status:
+FE fix sudah rebuild clean. Backend source sudah diupdate tapi perlu deploy. Semua 8 phase coding sudah selesai dari sisi FE.
+
+---
+
 ## 2026-07-21 10:11 WIB | PC | D:\2. Office\5. Ai\Claude | Prompt 1–2
 
 ### Topik yang dibahas:

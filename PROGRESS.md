@@ -457,3 +457,42 @@ Lanjutan rewrite KASVER POS ke MVC+Razor+Bootstrap — 4 dari 8 phase selesai di
 
 **Catatan Tambahan:**
 Tidak ada.
+
+---
+
+## Sesi [2026-07-21 15:08 WIB]
+
+**Konteks / Topik Utama:**
+Lanjutan rewrite KASVER POS — Phase 5-8 selesai (Users, Payment Methods/Settings, Shift standalone, Reports), lalu bug investigation & fix untuk shift flow yang tidak bisa dari halaman `/shift`.
+
+**Poin-Poin Penting:**
+- Phase 5 (Users & Roles): `/users` + `/roles` — sebagian besar endpoint PROPOSAL karena backend hanya punya `GET /api/User/Roles` dan `POST /api/User`. UI tetap dibangun full CRUD dengan warning label di modal yang proposal.
+- Phase 6 (Payment Methods + Settings): `/payment-methods` CRUD penuh (real endpoint), `/settings` read-only config display. Pelajaran penting: `PaymentCreateRequestDto` backend pakai snake_case property names → perlu `[JsonPropertyName]` eksplisit di FE request DTO.
+- Phase 8 (Shift standalone): `/shift` — history table + open/close modal. Gap: `GET /api/Shift` tidak return `id` per row, jadi close hanya bisa dari ActiveShift (pakai id dari `ReadyShift`).
+- Phase 7 (Reports): `/reports` — tidak ada endpoint backend sama sekali, data diambil dari `GET /api/Order` dan diagregasi di controller FE.
+- **Bug kritis ditemukan & di-fix**: Shift close/open dari `/shift` tidak bisa karena 2 masalah berbeda:
+  1. **FE bug**: `CloseShiftRequest` pakai `[JsonPropertyName("last_cash")]` → kirim snake_case tapi backend PascalCase. Case-insensitive tidak resolve underscore vs capital letter. Fix: hapus semua `[JsonPropertyName]` yang salah.
+  2. **Backend bug**: `TrShiftRepository.CheckShiftAlreadyOpen` (dan `GetAll`) materialize `OpenBy.firstname` NULL → throw → `ReadyShift` crash → FE return null → tombol close tidak muncul. Fix: tambah `?? ""` null-coalescing.
+- `N3 backend bug` (first_cash selalu 0) terbukti sebagian FE bug — `[JsonPropertyName("first_cash")]` penyebab mismatch. Genuine N3: `open_note` tidak di-save di repository.
+
+**Keputusan yang Dibuat:**
+- Semua 8 phase FE selesai — coding FE 100% done dari sisi Kasver_FE
+- Backend TrShiftRepository null-fix: pakai `?? ""` (minimal invasive)
+- Backend perlu deploy ulang ke server sebelum shift flow bisa ditest penuh
+
+**Perubahan yang Dilakukan:**
+- `Kasver_FE/Models/CashierModels.cs`: hapus `[JsonPropertyName]` dari `CloseShiftRequest` dan `OpenShiftRequest` — fix serialization bug
+- `GENESISPOS/Repositorys/TrShiftRepository.cs`: tambah `?? ""` di `GetAll()` dan `CheckShiftAlreadyOpen()`
+- `Kasver_FE`: ~15+ file baru untuk Phase 5-8 (Controllers, Services, Models, Views)
+- `Kasver_FE/Program.cs`: register `UserApiService` dan `PaymentTypeApiService`
+- `Kasver_FE/Models/DashboardModels.cs`: tambah `ReportsViewModel`
+- `Kasver_FE/Models/ShiftModels.cs`, `PaymentModels.cs`, `UserModels.cs`: file baru
+
+**Pending / Next Steps:**
+- [ ] **Deploy backend** fix ke server live `62.146.234.102` (TrShiftRepository.cs) — perlu user action
+- [ ] Test end-to-end shift flow setelah backend deployed
+- [ ] Fix Bug #2 (`GET /api/Order` crash `column t1.price`) — masih blocking Incoming Orders & Accumulated Bill
+- [ ] Backend implement endpoint-endpoint PROPOSAL yang sudah didokumentasikan di `Doc/PROGRESS.md`
+
+**Catatan Tambahan:**
+Backend source ada di 2 lokasi: `D:\2. Office\4. Project\Kasver API Git\GENESISPOS` (dipakai sesi ini) vs `GENESISPOS-development` (sesi sebelumnya) — perlu konfirmasi user mana yang di-deploy. Backend target .NET 10, tidak bisa di-build lokal (SDK 9.0.309).
