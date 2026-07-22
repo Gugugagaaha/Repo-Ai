@@ -3,6 +3,25 @@ Auto-updated setiap ~10 prompt dalam session. Format: section baru per batch 10 
 
 ---
 
+## 2026-07-22 15:05 WIB | PC | D:\2. Office\MAG\Azure CMHealth | Prompt ~8
+
+### Topik yang dibahas:
+1. Review file `DataPemohonClaim.cshtml` — form Data Permohonan Claim di project CMHealth (ASP.NET Core + Syncfusion EJ2)
+2. Buat popup konfirmasi sebelum save form — awalnya native `confirm()`, lalu diubah ke EJ2 Syncfusion Dialog (`confirmSimpanDialog`)
+3. Ganti semua `alert()` di `doSaveReg()` dengan EJ2 Dialog (`notifDialog` reusable — header dinamis via JS)
+4. Fix bug: tombol Batal di `confirmSimpanDialog` pakai class `btnBack` → ter-intercept event listener navigasi di DOMContentLoaded → navigate away saat diklik
+5. Ganti `alert()` di event listener `btnSimpan` dengan `showNotif()` yang sudah ada
+
+### Keputusan:
+- Refactor `btnSaveReg()` jadi 3 fungsi: `btnSaveReg` (validasi + show confirm dialog), `onConfirmSimpan`, `doSaveReg` (POST logic)
+- Satu `notifDialog` reusable untuk semua notifikasi (Berhasil/Gagal/Error) via `showNotif(header, message)`
+- Fix bug `btnBack` dengan `data-no-navigate` attribute + selector `:not([data-no-navigate])` — minimal invasive, styling tidak berubah
+
+### Status:
+Sesi UI enhancement — popup konfirmasi dan notifikasi EJ2 di DataPemohonClaim.cshtml selesai. Tidak ada perubahan backend.
+
+---
+
 ## 2026-07-21 15:08 WIB | PC | D:\2. Office\4. Project\Kasver Git\Kasver_FE | Prompt ~15+
 
 ### Topik yang dibahas:

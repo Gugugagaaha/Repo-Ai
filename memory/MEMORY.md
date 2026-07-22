@@ -34,3 +34,4 @@
 - [FE dulu, BE nyusul](feedback_fe_first_incomplete_backend.md) — kalau backend belum lengkap, tetap bangun FE dengan kontrak proposal yang didokumentasikan, jangan nunggu backend siap
 - [Skill Pipelines & Kombinasi Efisien](reference_skill_pipelines.md) — pipeline lengkap: pre-dev, dev loop, review, debug, security, ship, monitoring; combos underutilized; rules penggunaan
 - [ORMS BJJ (RMOnline) — Status Analisis](project_orms_bjj.md) — ASP.NET WebForms .NET 4.8, path D:\2. Office\5. Ai\RMOnline_NEW2, Phase 1-2 selesai, banyak critical security & architecture issues
+- [CMHealth — Status Project](project_cmhealth.md) — ASP.NET Core + EJ2 Syncfusion, path D:\2. Office\MAG\Azure CMHealth, DataPemohonClaim sudah ada EJ2 dialog pattern
